@@ -63,3 +63,11 @@ services:
              - K6_OUT=influxdb=http://influxdb:8086/k6
         volumes:
              - ./samples:/scripts
+    k6-kafka:
+        image: mostafamoradian/xk6-kafka:latest
+        ports:
+             - "6565:6565"
+        environment:
+             - K6_OUT=influxdb=http://influxdb:8086/k6kafka
+        volumes:
+             - ./samples-k6kafka:/scripts
