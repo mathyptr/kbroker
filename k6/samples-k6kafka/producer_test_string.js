@@ -2,7 +2,6 @@ import { check } from "k6";
 // import kafka extension
 import {
   Writer,
-  Reader,
   Connection,
   SchemaRegistry,
   SCHEMA_TYPE_STRING,
@@ -42,7 +41,7 @@ export default function () {
           schemaType: SCHEMA_TYPE_STRING,
         }),
         value: schemaRegistry.serialize({
-          data: swam-qesm-test-string-value",
+          data: "swam-qesm-test-string-value",
           schemaType: SCHEMA_TYPE_STRING,
         }),
         headers: {
@@ -60,7 +59,7 @@ export default function () {
 
 export function teardown(data) {
   if (__VU == 0) {
-    connection.deleteTopic(topic);
+//    connection.deleteTopic(topic);
   }
   writer.close();
   connection.close();
