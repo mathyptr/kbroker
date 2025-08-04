@@ -21,9 +21,11 @@ const connection = new Connection({
 });
 const schemaRegistry = new SchemaRegistry();
 
+/*
 if (__VU == 0) {
   connection.createTopic({ topic: topic });
 }
+*/
 
 const payload = "test swam-qesm SCHEMA_TYPE_BYTES payload";
 

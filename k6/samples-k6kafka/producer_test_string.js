@@ -22,9 +22,12 @@ const connection = new Connection({
 });
 const schemaRegistry = new SchemaRegistry();
 
+/*
 if (__VU == 0) {
   connection.createTopic({ topic: topic });
 }
+*/
+
 
 export const options = {
   thresholds: {
