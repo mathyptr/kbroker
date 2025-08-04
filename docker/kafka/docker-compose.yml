@@ -9,6 +9,7 @@ services:
         hostname: broker
         ports:
             - 9092:9092
+            - 9080:8080
         environment:
             KAFKA_NODE_ID: 1
             KAFKA_PROCESS_ROLES: broker,controller
@@ -58,7 +59,7 @@ services:
     k6:
         image: grafana/k6:latest
         ports:
-             - "6565:6565"
+             - "6566:6565"
         environment:
              - K6_OUT=influxdb=http://influxdb:8086/k6
         volumes:
