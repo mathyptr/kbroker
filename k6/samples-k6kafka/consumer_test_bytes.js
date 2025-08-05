@@ -7,8 +7,10 @@ import {
   SCHEMA_TYPE_BYTES,
 } from "k6/x/kafka"; 
 
-const brokers = ["kafka:9092"];
-const topic = "swam-qesm_topic_test_byte";
+// load test config, used to populate exported options object:
+const config = JSON.parse(open('./config/config_test.json'));
+const brokers = config.brokers;
+const topic = config.topic_byte;
 
 const reader = new Reader({
   brokers: brokers,
@@ -18,7 +20,6 @@ const connection = new Connection({
   address: brokers[0],
 });
 const schemaRegistry = new SchemaRegistry();
-
 
 const payload = "test swam-qesm SCHEMA_TYPE_BYTES payload";
 

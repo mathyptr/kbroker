@@ -8,13 +8,15 @@ import {
 } from "k6/x/kafka"
 
 
-const brokers = ["kafka:9092"];
-const topic = "swam-qesm_topic";
+// load test config, used to populate exported options object:
+const config = JSON.parse(open('./config/config_test.json'));
+const brokers = config.brokers;
+const topic = config.topic_string;
 
 const writer = new Writer({
   brokers: brokers,
   topic: topic,
-  autoCreateTopic: true,
+//  autoCreateTopic: true,
 });
 
 const connection = new Connection({

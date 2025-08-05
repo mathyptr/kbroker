@@ -10,8 +10,10 @@ import {
 // Prints module-level constants
 // console.log(kafka);
 
-const brokers = ["kafka:9092"];
-const topic = "swam-qesm_topic";
+// load test config, used to populate exported options object:
+const config = JSON.parse(open('./config/config_test.json'));
+const brokers = config.brokers;
+const topic = config.topic_string;
 
 const reader = new Reader({
   brokers: brokers,

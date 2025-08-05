@@ -8,9 +8,10 @@ import {
 } from "k6/x/kafka"
 
 
-const brokers = ["kafka:9092"];
-const topic = "swam-qesm_topic";
-
+// load test config, used to populate exported options object:
+const config = JSON.parse(open('./config/config_test.json'));
+const brokers = config.brokers;
+const topic = config.topic_string;
 
 const connection = new Connection({
   address: brokers[0],

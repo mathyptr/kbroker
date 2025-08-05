@@ -1,0 +1,5 @@
+{
+  "brokers" : ["kafka:9092"],
+  "topic_string" : "swam-qesm_topic_string",
+  "topic_byte" : "swam-qesm_topic_byte"
+}
