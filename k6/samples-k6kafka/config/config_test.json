@@ -1,5 +1,7 @@
 {
   "brokers" : ["kafka:9092"],
   "topic_string" : "swam-qesm_topic_string",
-  "topic_byte" : "swam-qesm_topic_byte"
+  "topic_byte" : "swam-qesm_topic_byte",
+  "num_partition" : "3",
+  "replicationFactor" : "1"
 }
