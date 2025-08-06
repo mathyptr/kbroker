@@ -10,6 +10,17 @@ import {
 
 // load test config, used to populate exported options object:
 const config = JSON.parse(open('./config/config_test.json'));
+
+
+const num_partition=Number.parseInt(config.num_partition ?? "1");
+//const num_partition=config.num_partition;
+console.log("Num partition: "+num_partition);
+
+const repFactor=Number.parseInt(config.replicationFactor ?? "1");
+//const replicationFactor=config.replicationFactor;
+console.log("ReplicationFactor: "+repFactor)
+
+
 const brokers = config.brokers;
 const topic = config.topic_string;
 
@@ -17,8 +28,14 @@ const connection = new Connection({
   address: brokers[0],
 });
 
+
+
 if (__VU == 0) {
-  connection.createTopic({ topic: topic });
+  connection.createTopic({ 
+    topic: topic,
+    numPartitions: num_partition,
+    replicationFactor: repFactor,
+ });
 }
 
 export default function () {
