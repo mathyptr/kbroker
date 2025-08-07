@@ -1,5 +1,5 @@
 # Test piattaforma di stream-processing 
-Progetto per l'esame di Software Architecture and Methodologies (SWAM) e di Quantitative Evaluation of Stochastic Models (QESM) tenuto dal prof. Enrico Vicario.
+Progetto per l'esame di Software Architecture and Methodologies (SWAM) e di Quantitative Evaluation of Stochastic Models (QESM) tenuti dal prof. Enrico Vicario  e previsti dal corso di laurea magistrale in Ingegneria Informatica dell'Università degli Studi di Firenze.
 
 ### Quickstart
 Lo scopo di questo progetto è il test di piattaforme di stream-processing.
