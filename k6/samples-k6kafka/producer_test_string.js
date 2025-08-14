@@ -12,6 +12,7 @@ import {
 const config = JSON.parse(open('./config/config_test.json'));
 const brokers = config.brokers;
 const topic = config.topic_string;
+const nmsg = config.num_messages;
 
 const writer = new Writer({
   brokers: brokers,
@@ -38,7 +39,7 @@ export const options = {
 };
 
 export default function () {
-  for (let index = 0; index < 100; index++) {
+  for (let index = 0; index < nmsg; index++) {
     let messages = [
       {
         key: schemaRegistry.serialize({
