@@ -13,10 +13,19 @@ const config = JSON.parse(open('./config/config_test.json'));
 const brokers = config.brokers;
 const topic = config.topic_string;
 const nmsg = config.num_messages;
+const batchSize= config.writer_batchSize;
+const batchBytes= config.writer_batchBytes;
+const batchTimeout= config.writer_batchTimeout;
+const writeTimeout= config.writer_writeTimeout;
+
 
 const writer = new Writer({
   brokers: brokers,
   topic: topic,
+  batchSize: batchSize,
+  batchBytes: batchBytes,
+  batchTimeout: batchTimeout,
+  writeTimeout: writeTimeout
 //  autoCreateTopic: true,
 });
 
@@ -38,9 +47,11 @@ export const options = {
   },
 };
 
+let msg=[];
+
 export default function () {
   for (let index = 0; index < nmsg; index++) {
-    let messages = [
+    msg.push(
       {
         key: schemaRegistry.serialize({
           data: "swam-qesm-test-string-key",
@@ -57,10 +68,14 @@ export default function () {
         partition: 0,
         time: new Date(), // timestamp
       },  
-    ];
-
-    writer.produce({ messages: messages });
+    );
+//    console.log("Num msg product: "+index);
+//    writer.produce({ messages: messages });
+//    console.log("Num msg sent: "+index);
   }
+
+    console.log(msg);
+    writer.produce({ messages: msg });
 }
 
 export function teardown(data) {
