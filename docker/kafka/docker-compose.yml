@@ -72,3 +72,7 @@ services:
              - K6_OUT=influxdb=http://influxdb:8086/k6kafka
         volumes:
              - ./samples-k6kafka:/scripts
+    speedbump:
+        image: kffl/speedbump:latest
+        command: --latency=10000ms --sine-amplitude=100ms --sine-period=1m --port=8000 kafka:9092
+
