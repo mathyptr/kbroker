@@ -24,7 +24,7 @@ services:
             KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
             KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
             KAFKA_CREATE_TOPICS: "Stocks:2:1,Quotes:2:1,Orders:2:1"
-            JMX_PORT: 5555
+            KAFKA_JMX_PORT: 5555
             KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote.rmi.port=5555 -Dcom.sun.management.jmxremote.port=5555"
         volumes:
         - type: volume
@@ -78,4 +78,7 @@ services:
     speedbump:
         image: kffl/speedbump:latest
         command: --latency=1000ms --sine-amplitude=100ms --sine-period=1m --port=8000 kafka:9092
-
+    jmxtrans:
+        image: jmxtrans/jmxtrans
+        volumes: 
+            - ./jmxtrans:/var/lib/jmxtrans 
