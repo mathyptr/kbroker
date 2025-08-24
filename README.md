@@ -11,3 +11,5 @@ In particolare è stata presa in considerazione la piatafforma Apache Kafka.
 - Kafka-ui
 - xk6-kafka
 - Grafana
+- Speedbump
+- jmxtrans
