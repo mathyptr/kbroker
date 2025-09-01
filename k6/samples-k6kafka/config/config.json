@@ -1,12 +1,19 @@
 {
-  "brokers" : ["speedbump:8000"],
+  "brokers" : ["kafka:9092"],
   "topic_string" : "swam-qesm_topic_string",
   "topic_byte" : "swam-qesm_topic_byte",
+  "headers_key" : "swam-qesmvalue",
+  "msg_key_string" : "swam-qesm-test-string-key",
+  "msg_value_string" : "swam-qesm-test-string-value",
   "num_partition" : "3",
   "replicationFactor" : "1",
-  "writer_batchSize" : 50,
-  "writer_batchBytes" : 7000000,
+  "writer_batchSize" : 10,
+  "writer_batchBytes" : 4096,
   "writer_batchTimeout" : 20000000000,
   "writer_writeTimeout" : 400000000000,
-  "num_messages" : 50
+  "num_messages" : 3000000,
+  "writer_numBurstExec" : 1,
+  "writer_evalPeriod" : 3000,
+  "writer_vus" : 1,
+  "writer_iterations" : 1
 }
