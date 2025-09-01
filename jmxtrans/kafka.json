@@ -4,6 +4,8 @@
         "port" : "5555",
         "host" : "broker",
         "alias": "kafka-1",
+        "numQueryThreads": 2,
+        "runPeriodSeconds": 10,
         "queries": [
         {
           "outputWriters": [
@@ -551,8 +553,7 @@
           ],
           "resultAlias": "LogFlush"
         }
-      ],
-      "numQueryThreads": 2
+      ]
     }
   ]
 }
