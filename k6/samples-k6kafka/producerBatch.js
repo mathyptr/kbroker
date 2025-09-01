@@ -1,4 +1,5 @@
 import { check } from "k6";
+import { Counter } from 'k6/metrics';
 import { sleep } from 'k6';
 // import kafka extension
 import {
@@ -9,6 +10,9 @@ import {
 } from "k6/x/kafka"
 
 
+const msgCountMisure = new Counter('custom_kafka_writer_msg_count');
+const msgSentMisure = new Counter('custom_kafka_writer_msg');
+
 // load test config, used to populate exported options object:
 const config = JSON.parse(open('./config/config.json'));
 const brokers = config.brokers;
@@ -16,6 +20,7 @@ const topic = config.topic_string;
 const headers_key = config.headers_key
 const msg_key_string = config.msg_key_string;
 const msg_value_string = config.msg_value_string;
+const num_partition=config.num_partition;
 const nmsg = config.num_messages;
 const batchSize= config.writer_batchSize;
 const batchBytes= config.writer_batchBytes;
@@ -26,8 +31,8 @@ const evalPeriod= config.writer_evalPeriod;
 
 const vus= config.writer_vus;
 const iterations = config.writer_iterations;
-//const numBurstExec = null ?? 1;
 
+//const numBurstExec = null ?? 1;
 
 const writer = new Writer({
   brokers: brokers,
@@ -60,20 +65,23 @@ export const options = {
     executor: 'shared-iterations',
     vus: vus, //  number of VUs fortest
     iterations: iterations, // number of iterations
-    maxDuration: '10m',
+    maxDuration: '20m',
   },
 },
 };
-
 
 
 export default function () {
   for ( let k=1; k <= numBurstExec ; k++) {
    let dateSart=new Date();
    let msg=[];
-   console.log("Burst num. " + k + " start at "+new Date());
-   for ( let i = 0; i < nmsg ; i++) {
-    msg.push(
+   let i = 0;
+   let j = 0;  
+   console.log("Burst num: " + k + " start at "+new Date());
+   while ( i < nmsg) {
+    msg=[];
+    for (j = 0; j < batchSize*num_partition && i+j < nmsg ; j++) {
+     msg.push(
       {
         key: schemaRegistry.serialize({
           data: msg_key_string, // msg key
@@ -89,12 +97,17 @@ export default function () {
         time: new Date(), // timestamp
       },  
      );
+    }
+    i=i+j;
+    console.log("Sending messages... " + j + " at "+new Date());
+    writer.produce({ messages: msg });
+    msgSentMisure.add(j);
+    msgCountMisure.add(i);
+    console.log("Messages sent: " + j + " at "+new Date());
+    console.log("Total Messages sent: " + i + " at "+new Date());
    }
-   console.log("Sending messages... " + nmsg + " at "+new Date());
-   writer.produce({ messages: msg });
    let elapsed=new Date()-dateSart;
    console.log("Elapsed Time: " + elapsed + "(ms)");
-   console.log("Messages sent: " + nmsg + " at "+new Date());
    console.log("Burst num. " + k + " end at "+new Date());
    if(elapsed<evalPeriod) {
        console.log("Sleep for a while "+new Date());
