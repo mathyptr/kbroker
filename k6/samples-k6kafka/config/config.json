@@ -7,7 +7,7 @@
   "msg_value_string" : "swam-qesm-test-string-value",
   "num_partition" : "3",
   "replicationFactor" : "1",
-  "writer_batchSize" : 10,
+  "writer_batchSize" : 100,
   "writer_batchBytes" : 4096,
   "writer_batchTimeout" : 20000000000,
   "writer_writeTimeout" : 400000000000,
@@ -15,5 +15,6 @@
   "writer_numBurstExec" : 1,
   "writer_evalPeriod" : 3000,
   "writer_vus" : 1,
-  "writer_iterations" : 1
+  "writer_iterations" : 1,
+  "reader_consumeLimit" : 100
 }
