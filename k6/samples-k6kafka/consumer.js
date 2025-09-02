@@ -1,4 +1,5 @@
 import { check } from "k6";
+import { Counter } from 'k6/metrics';
 // import kafka extension
 import {
   Reader,
@@ -7,13 +8,14 @@ import {
   SCHEMA_TYPE_STRING,
 } from "k6/x/kafka"; // import kafka extension
 
-// Prints module-level constants
-// console.log(kafka);
+const msgCountMisure = new Counter('custom_kafka_reader_msg_count');
 
 // load test config, used to populate exported options object:
 const config = JSON.parse(open('./config/config.json'));
 const brokers = config.brokers;
 const topic = config.topic_string;
+const nmsg = config.num_messages;
+const consumeLimit= config.reader_consumeLimit;
 
 const reader = new Reader({
   brokers: brokers,
@@ -32,14 +34,18 @@ export const options = {
 };
 
 export default function () {
-  // Read 10 messages only
-  let messages = reader.consume({ limit: 10 });
 
-  check(messages, {
-    "10 messages are received": (messages) => messages.length == 10,
-  });
+  for (let j = 0; j < nmsg ; j=j+consumeLimit) {
+   let messages = reader.consume({ limit: consumeLimit });
+   msgCountMisure.add(messages.length);
+   console.log("Read messages: " + messages.length);
+   console.log("Total Read messages: " + j);
 
-  check(messages[0], {
+   check(messages, {
+    " messages are received": (messages) => messages.length == consumeLimit,
+   });
+
+   check(messages[0], {
     "Topic equals to swam-qesm_topic": (msg) => msg["topic"] == topic,
     "Key is a string and is correct": (msg) =>
       schemaRegistry.deserialize({
@@ -62,7 +68,8 @@ export default function () {
     "Partition is zero": (msg) => msg["partition"] == 0,
     "Offset is gte zero": (msg) => msg["offset"] >= 0,
     "High watermark is gte zero": (msg) => msg["highWaterMark"] >= 0,
-  });
+   });
+ }
 }
 
 export function teardown(data) {
