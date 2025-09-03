@@ -189,6 +189,26 @@
               "password": "admin"
             }
           ],
+          "obj": "kafka.server:type=BrokerTopicMetrics,name=TotalProduceRequestsPerSec",
+          "attr": [
+            "Count",
+            "MeanRate",
+            "OneMinuteRate",
+            "FiveMinuteRate",
+            "FifteenMinuteRate"
+          ],
+          "resultAlias": "TotalProduceRequestsPerSec"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
           "obj": "kafka.server:type=ReplicaManager,name=PartitionCount",
           "attr": [
             "Value"
