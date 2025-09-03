@@ -12,6 +12,7 @@ import {
 
 const msgCountMisure = new Counter('custom_kafka_writer_msg_count');
 const msgSentMisure = new Counter('custom_kafka_writer_msg');
+const totalProduceRequest = new Counter('custom_kafka_writer_totalProduceRequest');
 
 // load test config, used to populate exported options object:
 const config = JSON.parse(open('./config/config.json'));
@@ -77,6 +78,7 @@ export default function () {
    let msg=[];
    let i = 0;
    let j = 0;  
+   let z = 1;  
    console.log("Burst num: " + k + " start at "+new Date());
    while ( i < nmsg) {
     msg=[];
@@ -99,10 +101,12 @@ export default function () {
      );
     }
     i=i+j;
+    z=z+3;
     console.log("Sending messages... " + j + " at "+new Date());
     writer.produce({ messages: msg });
     msgSentMisure.add(j);
     msgCountMisure.add(i);
+    totalProduceRequest.add(z);
     console.log("Messages sent: " + j + " at "+new Date());
     console.log("Total Messages sent: " + i + " at "+new Date());
    }
