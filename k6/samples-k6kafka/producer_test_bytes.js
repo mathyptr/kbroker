@@ -13,12 +13,21 @@ const config = JSON.parse(open('./config/config_test.json'));
 const brokers = config.brokers;
 const topic = config.topic_byte;
 const nmsg = config.num_messages;
+const batchSize= config.writer_batchSize;
+const batchBytes= config.writer_batchBytes;
+const batchTimeout= config.writer_batchTimeout;
+const writeTimeout= config.writer_writeTimeout;
 
 const writer = new Writer({
   brokers: brokers,
   topic: topic,
+  batchSize: batchSize,
+  batchBytes: batchBytes,
+  batchTimeout: batchTimeout,
+  writeTimeout: writeTimeout
 //  autoCreateTopic: true,
 });
+
 
 const connection = new Connection({
   address: brokers[0],
@@ -47,7 +56,6 @@ export default function () {
         }),
       },
     ];
-
     writer.produce({
       messages: messages,
     });
