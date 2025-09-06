@@ -12,6 +12,7 @@ import {
 // load test config, used to populate exported options object:
 const config = JSON.parse(open('./config/config.json'));
 const brokers = config.brokers;
+const connectToBroker_index = config.connectToBroker_index;
 const topic = config.topic_string;
 const headers_key = config.headers_key
 const msg_key_string = config.msg_key_string;
@@ -40,7 +41,7 @@ const writer = new Writer({
 });
 
 const connection = new Connection({
-  address: brokers[0],
+  address: brokers[connectToBroker_index],
 });
 const schemaRegistry = new SchemaRegistry();
 
