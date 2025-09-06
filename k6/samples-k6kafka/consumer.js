@@ -1,5 +1,6 @@
 import { check } from "k6";
 import { Counter } from 'k6/metrics';
+import { sleep } from 'k6';
 // import kafka extension
 import {
   Reader,
@@ -14,8 +15,13 @@ const msgCountMisure = new Counter('custom_kafka_reader_msg_count');
 const config = JSON.parse(open('./config/config.json'));
 const brokers = config.brokers;
 const topic = config.topic_string;
-const nmsg = config.num_messages;
+const nmsg = config.reader_num_messages;
 const consumeLimit= config.reader_consumeLimit;
+const reader_iterations = config.reader_iterations;
+const evalPeriod = config.reader_evalPeriod;
+
+const vus= config.writer_vus;
+const iterations = config.writer_iterations;
 
 const reader = new Reader({
   brokers: brokers,
@@ -31,10 +37,19 @@ export const options = {
     // Base thresholds to see reader is working
     kafka_reader_error_count: ["count == 0"],
   },
+  scenarios: {
+    test_scenario: {
+    executor: 'shared-iterations',
+    vus: vus, //  number of VUs fortest
+    iterations: iterations, // number of iterations
+    maxDuration: '20m',
+   },
+  },
 };
 
 export default function () {
-
+ for ( let k=1; k <= reader_iterations ; k++) {
+  let dateSart=new Date();
   for (let j = 0; j < nmsg ; j=j+consumeLimit) {
    let messages = reader.consume({ limit: consumeLimit });
    msgCountMisure.add(messages.length);
@@ -69,6 +84,15 @@ export default function () {
     "Offset is gte zero": (msg) => msg["offset"] >= 0,
     "High watermark is gte zero": (msg) => msg["highWaterMark"] >= 0,
    });
+  }
+  let elapsed=new Date()-dateSart;
+  console.log("Elapsed Time: " + elapsed + "(ms)");
+  console.log("Iter num. " + k + " end at "+new Date());
+  if(elapsed<evalPeriod) {
+       console.log("Sleep for a while "+new Date());
+       sleep((evalPeriod-elapsed)/1000)
+       console.log("Wake up after sleep "+new Date());
+  }
  }
 }
 

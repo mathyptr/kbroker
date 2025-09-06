@@ -12,7 +12,7 @@ import {
 const config = JSON.parse(open('./config/config_test.json'));
 const brokers = config.brokers;
 const topic = config.topic_string;
-const nmsg = config.num_messages;
+const nmsg = config.writer_num_messages;
 const batchSize= config.writer_batchSize;
 const batchBytes= config.writer_batchBytes;
 const batchTimeout= config.writer_batchTimeout;
