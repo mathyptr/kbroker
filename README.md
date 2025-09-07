@@ -38,6 +38,7 @@ cegge da Kafka un numero di messaggi pari al parametro "reader_num_messages" nel
 
 ## Esecuzione script
 Per eseguire uno script è sufficiente lanciare il seguente comando, avendo cura di montare la directory degli script in una directory del container:
+
 _docker-compose run --rm -v /src_dir:/dest_dir k6-kafka run /dest_dir/script_js_
 
 dove:
