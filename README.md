@@ -21,19 +21,19 @@ per la scrittura e la lettura di messaggi, per la creazione di topics e per la l
 Sono stati realizzati i seguenti script per implementare le funzionalità del produttore e consumatore:
 
 _config.js_
-Contiene i parametri di configurazione per i vari script come per esempio la lista dei broker, il nome del topic, il numero di partizioni e diversi parametri utilizzati dal produttore e dal consumatore (batchSize, batchTimeout, vus, iterations, maxDuration...)
+contiene i parametri di configurazione per i vari script come per esempio la lista dei broker, il nome del topic, il numero di partizioni e diversi parametri utilizzati dal produttore e dal consumatore (batchSize, batchTimeout, vus, iterations, maxDuration...)
 
 _create_topic.js_
-Crea il topic indicato dal parametro "topic_string" con numero di partizioni pari a  "num_partition" presenti nel file config.js
+crea il topic indicato dal parametro "topic_string" con numero di partizioni pari a  "num_partition" presenti nel file config.js
 
 _delete_topic.js_
-Cancella il topic indicato dal parametro "topic_string" presente nel file config.js
+cancella il topic indicato dal parametro "topic_string" presente nel file config.js
 
 _producer.js_
-Scrive su Kafka un numero di messaggi pari al parametro "writer_num_messages" nel topic indicato dal parametro "topic_string" parametri presenti nel file config.js
+ccrive su Kafka un numero di messaggi pari al parametro "writer_num_messages" nel topic indicato dal parametro "topic_string" parametri presenti nel file config.js
 
 _consumer.js_
-Legge da Kafka un numero di messaggi pari al parametro "reader_num_messages" nel topic indicato dal parametro "topic_string" parametri presenti nel file config.js
+cegge da Kafka un numero di messaggi pari al parametro "reader_num_messages" nel topic indicato dal parametro "topic_string" parametri presenti nel file config.js
 
 
 ## Esecuzione script
