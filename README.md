@@ -41,8 +41,11 @@ Per eseguire uno script è sufficiente lanciare il seguente comando, avendo cura
 _docker-compose run --rm -v /src_dir:/dest_dir k6-kafka run /dest_dir/script_js_
 
 dove:
+
 /src_dir  è il percorso sulla macchina host contenente gli script precedentemente illustrati
+
 /dest_dir è il percorso di destinazione all'interno del container che conterrà gli script dopo l'operazione di mount
+
 script_js è il nome, con estensione, di uno degli script precedentemente illustrati
 
 
