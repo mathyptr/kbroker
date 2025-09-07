@@ -21,7 +21,7 @@ per la scrittura e la lettura di messaggi, per la creazione di topics e per la l
 Sono stati realizzati i seguenti script per implementare le funzionalità del produttore e consumatore:
 
 ### config.js
-Contiene i parametri di configurazione per il vari script come per esempio la lista dei broker, il nome del topic, il numero di partizioni e diversi parametri utilizzati dal produttore e dal consumatore (batchSize,batchTimeout,vus,iterations,maxDuration...)
+Contiene i parametri di configurazione per i vari script come per esempio la lista dei broker, il nome del topic, il numero di partizioni e diversi parametri utilizzati dal produttore e dal consumatore (batchSize, batchTimeout, vus, iterations, maxDuration...)
 
 ### create_topic.js
 Crea il topic indicato dal parametro "topic_string" con numero di partizioni pari a  "num_partition" presenti nel file config.js
