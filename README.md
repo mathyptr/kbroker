@@ -13,3 +13,9 @@ In particolare è stata presa in considerazione la piatafforma Apache Kafka.
 - Grafana
 - Speedbump
 - jmxtrans
+
+### xk6-kafka
+In questo container è presente xK6-kafka, ovvero una versione di k6 con il plugin per
+effettuare i test su Kafka il quale fornisce diverse metriche. Mette infatti a disposizione funzionalità
+per la scrittura e la lettura di messaggi, per la creazione di topics e per la loro cancellazione.
+Sono stat realizzati i seguenti script per implementare le funzionalità del produttore e consumatore:

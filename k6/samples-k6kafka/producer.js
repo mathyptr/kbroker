@@ -1,4 +1,5 @@
 import { check } from "k6";
+import { Counter } from 'k6/metrics';
 import { sleep } from 'k6';
 // import kafka extension
 import {
@@ -9,14 +10,19 @@ import {
 } from "k6/x/kafka"
 
 
+const msgCountMisure = new Counter('custom_kafka_writer_msg_count');
+const msgSentMisure = new Counter('custom_kafka_writer_msg');
+const totalProduceRequest = new Counter('custom_kafka_writer_totalProduceRequest');
+
 // load test config, used to populate exported options object:
 const config = JSON.parse(open('./config/config.json'));
 const brokers = config.brokers;
 const connectToBroker_index = config.connectToBroker_index;
 const topic = config.topic_string;
-const headers_key = config.headers_key
+const headers_key = config.headers_key;
 const msg_key_string = config.msg_key_string;
 const msg_value_string = config.msg_value_string;
+const num_partition=config.num_partition;
 const nmsg = config.writer_num_messages;
 const batchSize= config.writer_batchSize;
 const batchBytes= config.writer_batchBytes;
@@ -29,8 +35,8 @@ const executor = config.writer_k6_executor;
 const vus= config.writer_k6_vus;
 const iterations = config.writer_k6_iterations;
 const maxDuration = config.writer_k6_maxDuration;
-//const numBurstExec = null ?? 1;
 
+//const numBurstExec = null ?? 1;
 
 const writer = new Writer({
   brokers: brokers,
@@ -65,18 +71,22 @@ export const options = {
     iterations: iterations, // number of iterations
     maxDuration: maxDuration,
   },
-},
+ },
 };
-
 
 
 export default function () {
   for ( let k=1; k <= numBurstExec ; k++) {
    let dateSart=new Date();
    let msg=[];
-   console.log("Burst num. " + k + " start at "+new Date());
-   for ( let i = 0; i < nmsg ; i++) {
-    msg.push(
+   let i = 0;
+   let j = 0;  
+   let z = 1;  
+   console.log("Burst num: " + k + " start at "+new Date());
+   while ( i < nmsg) {
+    msg=[];
+    for (j = 0; j < batchSize*num_partition && i+j < nmsg ; j++) {
+     msg.push(
       {
         key: schemaRegistry.serialize({
           data: msg_key_string, // msg key
@@ -92,12 +102,19 @@ export default function () {
         time: new Date(), // timestamp
       },  
      );
+    }
+    i=i+j;
+    z=z+3;
+    console.log("Sending messages... " + j + " at "+new Date());
+    writer.produce({ messages: msg });
+    msgSentMisure.add(j);
+    msgCountMisure.add(i);
+    totalProduceRequest.add(z);
+    console.log("Messages sent: " + j + " at "+new Date());
+    console.log("Total Messages sent: " + i + " at "+new Date());
    }
-   console.log("Sending messages... " + nmsg + " at "+new Date());
-   writer.produce({ messages: msg });
    let elapsed=new Date()-dateSart;
    console.log("Elapsed Time: " + elapsed + "(ms)");
-   console.log("Messages sent: " + nmsg + " at "+new Date());
    console.log("Burst num. " + k + " end at "+new Date());
    if(elapsed<evalPeriod) {
        console.log("Sleep for a while "+new Date());
