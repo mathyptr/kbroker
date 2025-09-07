@@ -15,10 +15,17 @@
   "writer_num_messages" : 300000,
   "writer_numBurstExec" : 1,
   "writer_evalPeriod" : 300,
-  "writer_vus" : 1,
-  "writer_iterations" : 1,
+  "writer_executor" : "shared-iterations",
+  "writer_k6_vus" : 1,
+  "writer_k6_iterations" : 1,
+  "writer_k6_maxDuration" : "20m",
+  "writer_k6_executor" : "shared-iterations",
   "reader_num_messages" : 300000,
-  "reader_iterations" : 3,
+  "reader_repetitions" : 3,
   "reader_evalPeriod" : 6000,
-  "reader_consumeLimit" : 100
+  "reader_consumeLimit" : 100,
+  "reader_k6_executor" : "shared-iterations",
+  "reader_k6_vus" : 1,
+  "reader_k6_iterations" : 1,
+  "reader_k6_maxDuration" : "20m"
 }

@@ -25,8 +25,10 @@ const writeTimeout= config.writer_writeTimeout;
 const numBurstExec= config.writer_numBurstExec;
 const evalPeriod= config.writer_evalPeriod;
 
-const vus= config.writer_vus;
-const iterations = config.writer_iterations;
+const executor = config.writer_k6_executor;
+const vus= config.writer_k6_vus;
+const iterations = config.writer_k6_iterations;
+const maxDuration = config.writer_k6_maxDuration;
 //const numBurstExec = null ?? 1;
 
 
@@ -58,10 +60,10 @@ export const options = {
   },
   scenarios: {
     test_scenario: {
-    executor: 'shared-iterations',
+    executor: executor,
     vus: vus, //  number of VUs fortest
     iterations: iterations, // number of iterations
-    maxDuration: '10m',
+    maxDuration: maxDuration,
   },
 },
 };

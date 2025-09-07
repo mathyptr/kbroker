@@ -17,11 +17,13 @@ const brokers = config.brokers;
 const topic = config.topic_string;
 const nmsg = config.reader_num_messages;
 const consumeLimit= config.reader_consumeLimit;
-const reader_iterations = config.reader_iterations;
+const repetitions = config.reader_repetitions;
 const evalPeriod = config.reader_evalPeriod;
 
-const vus= config.writer_vus;
-const iterations = config.writer_iterations;
+const executor = config.reader_k6_executor;
+const vus= config.reader_k6_vus;
+const iterations = config.reader_k6_iterations;
+const maxDuration = config.reader_k6_maxDuration;
 
 const reader = new Reader({
   brokers: brokers,
@@ -39,16 +41,16 @@ export const options = {
   },
   scenarios: {
     test_scenario: {
-    executor: 'shared-iterations',
+    executor: executor,
     vus: vus, //  number of VUs fortest
     iterations: iterations, // number of iterations
-    maxDuration: '20m',
+    maxDuration: maxDuration,
    },
   },
 };
 
 export default function () {
- for ( let k=1; k <= reader_iterations ; k++) {
+ for ( let k=1; k <= repetitions ; k++) {
   let dateSart=new Date();
   for (let j = 0; j < nmsg ; j=j+consumeLimit) {
    let messages = reader.consume({ limit: consumeLimit });

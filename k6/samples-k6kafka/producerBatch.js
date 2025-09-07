@@ -19,7 +19,7 @@ const config = JSON.parse(open('./config/config.json'));
 const brokers = config.brokers;
 const connectToBroker_index = config.connectToBroker_index;
 const topic = config.topic_string;
-const headers_key = config.headers_key
+const headers_key = config.headers_key;
 const msg_key_string = config.msg_key_string;
 const msg_value_string = config.msg_value_string;
 const num_partition=config.num_partition;
@@ -31,8 +31,10 @@ const writeTimeout= config.writer_writeTimeout;
 const numBurstExec= config.writer_numBurstExec;
 const evalPeriod= config.writer_evalPeriod;
 
-const vus= config.writer_vus;
-const iterations = config.writer_iterations;
+const executor = config.writer_k6_executor;
+const vus= config.writer_k6_vus;
+const iterations = config.writer_k6_iterations;
+const maxDuration = config.writer_k6_maxDuration;
 
 //const numBurstExec = null ?? 1;
 
@@ -64,10 +66,10 @@ export const options = {
   },
   scenarios: {
     test_scenario: {
-    executor: 'shared-iterations',
+    executor: executor,
     vus: vus, //  number of VUs fortest
     iterations: iterations, // number of iterations
-    maxDuration: '20m',
+    maxDuration: maxDuration,
   },
  },
 };
