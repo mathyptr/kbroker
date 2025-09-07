@@ -36,6 +36,9 @@ Scrive su Kafka un numero di messaggi pari al parametro "writer_num_messages" ne
 Legge da Kafka un numero di messaggi pari al parametro "reader_num_messages" nel topic indicato dal parametro "topic_string" parametri presenti nel file config.js
 
 
+
+
+
 Per eseguire uno script è sufficiente lanciare il seguente comando, avendo cura di montare la directory degli script in una directory del container:
 docker-compose run --rm -v /src_dir:/dest_dir k6-kafka run /dest_dir/script_js
 
