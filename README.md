@@ -20,27 +20,25 @@ effettuare i test su Kafka il quale fornisce diverse metriche. Mette infatti a d
 per la scrittura e la lettura di messaggi, per la creazione di topics e per la loro cancellazione.
 Sono stati realizzati i seguenti script per implementare le funzionalità del produttore e consumatore:
 
-### config.js
+_config.js_
 Contiene i parametri di configurazione per i vari script come per esempio la lista dei broker, il nome del topic, il numero di partizioni e diversi parametri utilizzati dal produttore e dal consumatore (batchSize, batchTimeout, vus, iterations, maxDuration...)
 
-### create_topic.js
+_create_topic.js_
 Crea il topic indicato dal parametro "topic_string" con numero di partizioni pari a  "num_partition" presenti nel file config.js
 
-### delete_topic.js
+_delete_topic.js_
 Cancella il topic indicato dal parametro "topic_string" presente nel file config.js
 
-### producer.js
+_producer.js_
 Scrive su Kafka un numero di messaggi pari al parametro "writer_num_messages" nel topic indicato dal parametro "topic_string" parametri presenti nel file config.js
 
-### consumer.js
+_consumer.js_
 Legge da Kafka un numero di messaggi pari al parametro "reader_num_messages" nel topic indicato dal parametro "topic_string" parametri presenti nel file config.js
 
 
-
-
-
+## Esecuzione script
 Per eseguire uno script è sufficiente lanciare il seguente comando, avendo cura di montare la directory degli script in una directory del container:
-docker-compose run --rm -v /src_dir:/dest_dir k6-kafka run /dest_dir/script_js
+_docker-compose run --rm -v /src_dir:/dest_dir k6-kafka run /dest_dir/script_js_
 
 dove:
 /src_dir  è il percorso sulla macchina host contenente gli script precedentemente illustrati
