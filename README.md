@@ -24,16 +24,16 @@ Sono stati realizzati i seguenti script per implementare le funzionalità del pr
 Contiene i parametri di configurazione per il vari script come per esempio la lista dei broker, il nome del topic, il numero di partizioni e diversi parametri utilizzati dal produttore e dal consumatore (batchSize,batchTimeout,vus,iterations,maxDuration...)
 
 ### create_topic.js
-Crea il topic indicato dal parametro "topic_string" con numero di partizioni pari a  "num_partition" presente nel file config.js
+Crea il topic indicato dal parametro "topic_string" con numero di partizioni pari a  "num_partition" presenti nel file config.js
 
 ### delete_topic.js
 Cancella il topic indicato dal parametro "topic_string" presente nel file config.js
 
 ### producer.js
-Produce nmessaggi pari al parametro "writer_num_messages" nel topic indicato dal parametro "topic_string" parametri presenti nel file config.js
+Scrive su Kafka un numero di messaggi pari al parametro "writer_num_messages" nel topic indicato dal parametro "topic_string" parametri presenti nel file config.js
 
 ### consumer.js
-Produce nmessaggi pari al parametro "reader_num_messages" nel topic indicato dal parametro "topic_string" parametri presenti nel file config.js
+Legge da Kafka un numero di messaggi pari al parametro "reader_num_messages" nel topic indicato dal parametro "topic_string" parametri presenti nel file config.js
 
 
 
