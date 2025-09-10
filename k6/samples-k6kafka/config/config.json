@@ -15,7 +15,6 @@
   "writer_num_messages" : 300000,
   "writer_numBurstExec" : 1,
   "writer_evalPeriod" : 300,
-  "writer_executor" : "shared-iterations",
   "writer_k6_vus" : 1,
   "writer_k6_iterations" : 1,
   "writer_k6_maxDuration" : "20m",
