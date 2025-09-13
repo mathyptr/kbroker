@@ -23,18 +23,21 @@ const headers_key = config.headers_key;
 const msg_key_string = config.msg_key_string;
 const msg_value_string = config.msg_value_string;
 const num_partition=config.num_partition;
-const nmsg = config.writer_num_messages;
 const batchSize= config.writer_batchSize;
 const batchBytes= config.writer_batchBytes;
 const batchTimeout= config.writer_batchTimeout;
 const writeTimeout= config.writer_writeTimeout;
 const numBurstExec= config.writer_numBurstExec;
 const evalPeriod= config.writer_evalPeriod;
+const distr_va = config.writer_distr_va;
+const nmsg_test = config.writer_num_messages;
 
 const executor = config.writer_k6_executor;
 const vus= config.writer_k6_vus;
 const iterations = config.writer_k6_iterations;
 const maxDuration = config.writer_k6_maxDuration;
+
+const debug = config.debug
 
 //const numBurstExec = null ?? 1;
 
@@ -75,14 +78,33 @@ export const options = {
 };
 
 
+function log(str){
+    if (debug!=0)
+        console.log(str);
+};
+
+
+function distrVA(){
+    return Math.floor(Math.random() * nmsg_test)+1;
+};
+
+function getNumMsg(){
+    if(distr_va==0)
+        return nmsg_test;
+    else
+     return distrVA();
+};
+
 export default function () {
+  log("Connect to broker: "+brokers[connectToBroker_index]);    
+  let nmsg=getNumMsg();
   for ( let k=1; k <= numBurstExec ; k++) {
    let dateSart=new Date();
    let msg=[];
    let i = 0;
    let j = 0;  
    let z = 1;  
-   console.log("Burst num: " + k + " start at "+new Date());
+   log("Burst num: " + k + " start at "+new Date());
    while ( i < nmsg) {
     msg=[];
     for (j = 0; j < batchSize*num_partition && i+j < nmsg ; j++) {
@@ -104,22 +126,22 @@ export default function () {
      );
     }
     i=i+j;
-    z=z+3;
-    console.log("Sending messages... " + j + " at "+new Date());
+    z=z+1;
+    log("Sending messages... " + j + " at "+new Date());
     writer.produce({ messages: msg });
     msgSentMisure.add(j);
     msgCountMisure.add(i);
     totalProduceRequest.add(z);
-    console.log("Messages sent: " + j + " at "+new Date());
-    console.log("Total Messages sent: " + i + " at "+new Date());
+    log("Messages sent: " + j + " at "+new Date());
+    log("Total Messages sent: " + i + " at "+new Date());
    }
    let elapsed=new Date()-dateSart;
-   console.log("Elapsed Time: " + elapsed + "(ms)");
-   console.log("Burst num. " + k + " end at "+new Date());
+   log("Elapsed Time: " + elapsed + "(ms)");
+   log("Burst num. " + k + " end at "+new Date());
    if(elapsed<evalPeriod) {
-       console.log("Sleep for a while "+new Date());
+       log("Sleep for a while "+new Date());
        sleep((evalPeriod-elapsed)/1000)
-       console.log("Wake up after sleep "+new Date());
+       log("Wake up after sleep "+new Date());
    }
  }
 }

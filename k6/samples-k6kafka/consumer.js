@@ -14,6 +14,7 @@ const msgCountMisure = new Counter('custom_kafka_reader_msg_count');
 // load test config, used to populate exported options object:
 const config = JSON.parse(open('./config/config.json'));
 const brokers = config.brokers;
+const connectToBroker_index = config.connectToBroker_index;
 const topic = config.topic_string;
 const nmsg = config.reader_num_messages;
 const consumeLimit= config.reader_consumeLimit;
@@ -25,12 +26,14 @@ const vus= config.reader_k6_vus;
 const iterations = config.reader_k6_iterations;
 const maxDuration = config.reader_k6_maxDuration;
 
+const debug = config.debug
+
 const reader = new Reader({
   brokers: brokers,
   topic: topic,
 });
 const connection = new Connection({
-  address: brokers[0],
+  address: brokers[connectToBroker_index],
 });
 const schemaRegistry = new SchemaRegistry();
 
@@ -49,14 +52,20 @@ export const options = {
   },
 };
 
+function log(str){
+    if (debug!=0)
+        console.log(str);
+};
+
 export default function () {
+ log("Connect to broker: "+brokers[connectToBroker_index]);
  for ( let k=1; k <= repetitions ; k++) {
   let dateSart=new Date();
   for (let j = 0; j < nmsg ; j=j+consumeLimit) {
    let messages = reader.consume({ limit: consumeLimit });
    msgCountMisure.add(messages.length);
-   console.log("Read messages: " + messages.length);
-   console.log("Total Read messages: " + j);
+   log("Read messages: " + messages.length);
+   log("Total Read messages: " + j);
 
    check(messages, {
     " messages are received": (messages) => messages.length == consumeLimit,
@@ -88,12 +97,12 @@ export default function () {
    });
   }
   let elapsed=new Date()-dateSart;
-  console.log("Elapsed Time: " + elapsed + "(ms)");
-  console.log("Iter num. " + k + " end at "+new Date());
+  log("Elapsed Time: " + elapsed + "(ms)");
+  log("Iter num. " + k + " end at "+new Date());
   if(elapsed<evalPeriod) {
-       console.log("Sleep for a while "+new Date());
+       log("Sleep for a while "+new Date());
        sleep((evalPeriod-elapsed)/1000)
-       console.log("Wake up after sleep "+new Date());
+       log("Wake up after sleep "+new Date());
   }
  }
 }

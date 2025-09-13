@@ -134,7 +134,13 @@ services:
              - ./samples-k6kafka:/scripts
     speedbump:
         image: kffl/speedbump:latest
-        command: --latency=1000ms --sine-amplitude=100ms --sine-period=1m --port=8000 kafka:9092
+        command: --latency=1000ms --sine-amplitude=1000ms --sine-period=1m --port=8000 kafka:9092
+    speedbump2:
+        image: kffl/speedbump:latest
+        command: --latency=1000ms --sine-amplitude=1000ms --sine-period=1m --port=8002 kafka2:9092
+    speedbump3:
+        image: kffl/speedbump:latest
+        command: --latency=1000ms --sine-amplitude=1000ms --sine-period=1m --port=8003 kafka3:9092
     jmxtrans:
         image: jmxtrans/jmxtrans
         volumes: 
