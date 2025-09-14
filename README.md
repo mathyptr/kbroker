@@ -74,11 +74,11 @@ In questo lavoro Grafana è stato utilizzato per visualizzare le metriche di Kaf
 Per simulare la latenza di rete in questo lavoro abbiamo utilizzato Speedbump. Gli script k6 di questo lavoro si connettono a speedbump il quale inoltra e chiamate a kafka.
 
 Nel file config.js utilizzato dagli script k6 è presente il seguente parametro:
-  __"brokers" : ["speedbump:8000","speedbump2:8002","speedbump3:8003"]__
+_"brokers" : ["speedbump:8000","speedbump2:8002","speedbump3:8003"]_
 utilizzato come indirizzo per la connessione verso Kafka
 --const connection = new Connection({address: brokers[connectToBroker_index],});--
 
 mentre speedbump viene eseguito con i seguenti parametri
-__speedbump : --latency=1000ms --sine-amplitude=1000ms --sine-period=1m --port=8000 kafka:9092 __
-__speedbump2: --latency=1000ms --sine-amplitude=1000ms --sine-period=1m --port=8002 kafka2:9092__
-__speedbump3: --latency=1000ms --sine-amplitude=1000ms --sine-period=1m --port=8003 kafka3:9092__
+_speedbump : --latency=1000ms --sine-amplitude=1000ms --sine-period=1m --port=8000 kafka:9092 _
+_speedbump2: --latency=1000ms --sine-amplitude=1000ms --sine-period=1m --port=8002 kafka2:9092_
+_speedbump3: --latency=1000ms --sine-amplitude=1000ms --sine-period=1m --port=8003 kafka3:9092_
