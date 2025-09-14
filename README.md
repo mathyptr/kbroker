@@ -80,9 +80,9 @@ utilizzato come indirizzo per la connessione verso Kafka
 
 --const connection = new Connection({address: brokers[connectToBroker_index],});--
 
-mentre speedbump viene eseguito con i seguenti parametri
+mentre speedbump viene eseguito con i seguenti parametri:
 
-_speedbump : --latency=1000ms --sine-amplitude=1000ms --sine-period=1m --port=8000 kafka:9092 _
+_speedbump : --latency=1000ms --sine-amplitude=1000ms --sine-period=1m --port=8000 kafka:9092_
 
 _speedbump2: --latency=1000ms --sine-amplitude=1000ms --sine-period=1m --port=8002 kafka2:9092_
 
