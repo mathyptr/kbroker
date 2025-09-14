@@ -76,7 +76,7 @@ Per simulare la latenza di rete in questo lavoro abbiamo utilizzato Speedbump. G
 Nel file config.js utilizzato dagli script k6 è presente il seguente parametro:
 _"brokers" : ["speedbump:8000","speedbump2:8002","speedbump3:8003"]_
 
-utilizzato come indirizzo per la connessione verso Kafka
+utilizzato come indirizzo per la connessione verso Kafka:
 
 _const connection = new Connection({address: brokers[connectToBroker_index],})_
 
