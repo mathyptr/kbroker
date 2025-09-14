@@ -51,7 +51,7 @@ dove:
 script_js è il nome, con estensione, di uno degli script precedentemente illustrati
 
 ## jmxtrans
-Jmxtrans è uno strumento software che consente di recuperare informazioni da applicazioni Java che utilizzano le Java Management Extensions (JMX), per poi esportarli verso altri servizi o sistemi di monitoring.
+jmxtrans è uno strumento software che consente di recuperare informazioni da applicazioni Java che utilizzano le Java Management Extensions (JMX), per poi esportarli verso altri servizi o sistemi di monitoring.
 
 In questo lavoro le metriche che devono essere esportate da Kafka si trovano nel file jmxtrans\kafka.json e saranno memorizzate nel database InfluxDB.
 
