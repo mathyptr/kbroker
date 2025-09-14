@@ -60,7 +60,7 @@ Questo container si occupa della memorizzazione delle metriche esportate da Kafk
 
 InfluxDB è uno strumento open source all-in-one per la collezione, il monitoraggio ed il processamento di dati time series.
 
-Per creare il database utilizzato in questo lavoro si può utilizzare il seguente comando:
+Per creare il database utilizzato in questo lavoro si può eseguire il seguente comando:
 
 _curl -POST http://INFLUXDB_IP:8086/query --data-urlencode "q=CREATE DATABASE k6kafka"_
 
