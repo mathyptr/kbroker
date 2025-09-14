@@ -69,3 +69,16 @@ Grafana è una piattaforma interattiva open source per la visualizzazione dei da
 Consente inoltre di eseguire query e impostare avvisi sulle informazioni e sulle metriche a prescindere dall'ambiente in cui sono archiviati i dati.
 
 In questo lavoro Grafana è stato utilizzato per visualizzare le metriche di Kafka, metriche prelevate dal datatabase InfluxDB alimentato da jmxtrans.
+
+## Speedbump
+Per simulare la latenza di rete in questo lavoro abbiamo utilizzato Speedbump. Gli script k6 di questo lavoro si connettono a speedbump il quale inoltra e chiamate a kafka.
+
+Nel file config.js utilizzato dagli script k6 è presente il seguente parametro:
+  __"brokers" : ["speedbump:8000","speedbump2:8002","speedbump3:8003"]__
+utilizzato come indirizzo per la connessione verso Kafka
+--const connection = new Connection({address: brokers[connectToBroker_index],});--
+
+mentre speedbump viene eseguito con i seguenti parametri
+__speedbump : --latency=1000ms --sine-amplitude=1000ms --sine-period=1m --port=8000 kafka:9092 __
+__speedbump2: --latency=1000ms --sine-amplitude=1000ms --sine-period=1m --port=8002 kafka2:9092__
+__speedbump3: --latency=1000ms --sine-amplitude=1000ms --sine-period=1m --port=8003 kafka3:9092__
