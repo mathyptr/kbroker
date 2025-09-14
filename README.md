@@ -87,3 +87,8 @@ _speedbump : --latency=1000ms --sine-amplitude=1000ms --sine-period=1m --port=80
 _speedbump2: --latency=1000ms --sine-amplitude=1000ms --sine-period=1m --port=8002 kafka2:9092_
 
 _speedbump3: --latency=1000ms --sine-amplitude=1000ms --sine-period=1m --port=8003 kafka3:9092_
+
+
+## Kafka-UI
+Kafka-UI è un'interfaccia web open source progettata per semplificare la gestione e il monitoraggio di Apache Kafka.
+In questo lavoro Kafka-UI è stato utilizzato nella prima fase di test del funzionamento di Kafka e nella prima fase di realizzazione degli script xK6-kafka.
