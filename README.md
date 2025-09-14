@@ -78,7 +78,7 @@ _"brokers" : ["speedbump:8000","speedbump2:8002","speedbump3:8003"]_
 
 utilizzato come indirizzo per la connessione verso Kafka
 
---const connection = new Connection({address: brokers[connectToBroker_index],});--
+_const connection = new Connection({address: brokers[connectToBroker_index],})_
 
 mentre speedbump viene eseguito con i seguenti parametri:
 
