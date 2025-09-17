@@ -3,7 +3,7 @@ Progetto per l'esame di Software Architecture and Methodologies (SWAM) e di Quan
 
 ### Quickstart
 Lo scopo di questo progetto è il test di piattaforme di stream-processing.
-In particolare è stata presa in considerazione la piatafforma Apache Kafka.
+In particolare è stata presa in considerazione la piattaforma Apache Kafka. In questo lavoro abbiamo configurato Kafka in modalità KRaft eliminando la necessità di utilizzare Zookeeper.
 
 ### Tecnologie utilizzate
 - Apache Kafka
