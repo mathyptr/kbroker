@@ -1,11 +1,11 @@
 version: '2'
 volumes:
-    broker-data:
-    broker-secrets:
+    broker-data: 
+    broker-secrets: 
     broker-data2:
-    broker-secrets2:
-    broker-data3:
-    broker-secrets3:
+    broker-secrets2: 
+    broker-data3: 
+    broker-secrets3: 
 services:
     kafka:
         image: apache/kafka:3.9.1
@@ -45,12 +45,13 @@ services:
         ports:
             - 9094:9092
             - 9095:9093
+            - 6666:6666
         environment:
             KAFKA_NODE_ID: 2
             KAFKA_BROKER_ID: 2
             KAFKA_PROCESS_ROLES: broker,controller
             KAFKA_LISTENERS: PLAINTEXT://broker2:9092,CONTROLLER://broker2:9093
-            KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://broker2:9092,CONTROLLER://kafka2:9093'
+            KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://broker2:9092,CONTROLLER://broker2:9093'
             KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
             KAFKA_CONTROLLER_QUORUM_VOTERS: '1@broker:9093,2@broker2:9093,3@broker3:9093'
             KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
@@ -59,6 +60,9 @@ services:
             KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
             KAFKA_DEFAULT_REPLICATION_FACTOR: 3
             KAFKA_MIN_INSYNC_REPLICAS: 2
+            KAFKA_JMX_PORT: 6666
+            KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote.rmi.port=6666 -Dcom.sun.management.jmxremote.port=6666"
+
         volumes:
         - type: volume
           source: broker-data2
@@ -74,12 +78,13 @@ services:
         ports:
             - 9096:9092
             - 9097:9093
+            - 7777:7777
         environment:
             KAFKA_NODE_ID: 3
             KAFKA_BROKER_ID: 3
             KAFKA_PROCESS_ROLES: broker,controller
             KAFKA_LISTENERS: PLAINTEXT://broker3:9092,CONTROLLER://broker3:9093
-            KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://broker3:9092,CONTROLLER://kafka3:9093'
+            KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://broker3:9092,CONTROLLER://broker3:9093'
             KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
             KAFKA_CONTROLLER_QUORUM_VOTERS: '1@broker:9093,2@broker2:9093,3@broker3:9093'
             KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
@@ -88,6 +93,9 @@ services:
             KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
             KAFKA_DEFAULT_REPLICATION_FACTOR: 3
             KAFKA_MIN_INSYNC_REPLICAS: 2
+            KAFKA_JMX_PORT: 7777
+            KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote.rmi.port=7777 -Dcom.sun.management.jmxremote.port=7777"
+
         volumes:
         - type: volume
           source: broker-data3

@@ -62,39 +62,46 @@ export default function () {
  for ( let k=1; k <= repetitions ; k++) {
   let dateSart=new Date();
   for (let j = 0; j < nmsg ; j=j+consumeLimit) {
-   let messages = reader.consume({ limit: consumeLimit });
-   msgCountMisure.add(messages.length);
-   log("Read messages: " + messages.length);
-   log("Total Read messages: " + j);
+   try {
+       let messages = reader.consume({ limit: consumeLimit });
+       msgCountMisure.add(messages.length);
+       log("Read messages: " + messages.length);
+       log("Total Read messages: " + j);
 
-   check(messages, {
-    " messages are received": (messages) => messages.length == consumeLimit,
-   });
+       check(messages, {
+        " messages are received": (messages) => messages.length == consumeLimit,
+       });
 
-   check(messages[0], {
-    "Topic equals to swam-qesm_topic": (msg) => msg["topic"] == topic,
-    "Key is a string and is correct": (msg) =>
-      schemaRegistry.deserialize({
-        data: msg.key,
-        schemaType: SCHEMA_TYPE_STRING,
-      }) == "swam-qesm-test-string-key",
-    "Value is a string and is correct": (msg) =>
-      typeof schemaRegistry.deserialize({
-        data: msg.value,
-        schemaType: SCHEMA_TYPE_STRING,
-      }) == "string" &&
-      schemaRegistry.deserialize({
-        data: msg.value,
-        schemaType: SCHEMA_TYPE_STRING,
-      }) == "swam-qesm-test-string-value",
-    "Header equals {'mykey': 'swam-qesmvalue'}": (msg) =>
-      "mykey" in msg.headers &&
-      String.fromCharCode(...msg.headers["mykey"]) == "swam-qesmvalue",
-    "Time is past": (msg) => new Date(msg["time"]) < new Date(),
-    "Partition is zero": (msg) => msg["partition"] == 0,
-    "Offset is gte zero": (msg) => msg["offset"] >= 0,
-    "High watermark is gte zero": (msg) => msg["highWaterMark"] >= 0,
-   });
+       check(messages[0], {
+        "Topic equals to swam-qesm_topic": (msg) => msg["topic"] == topic,
+        "Key is a string and is correct": (msg) =>
+          schemaRegistry.deserialize({
+            data: msg.key,
+            schemaType: SCHEMA_TYPE_STRING,
+          }) == "swam-qesm-test-string-key",
+        "Value is a string and is correct": (msg) =>
+          typeof schemaRegistry.deserialize({
+            data: msg.value,
+            schemaType: SCHEMA_TYPE_STRING,
+          }) == "string" &&
+          schemaRegistry.deserialize({
+            data: msg.value,
+            schemaType: SCHEMA_TYPE_STRING,
+          }) == "swam-qesm-test-string-value",
+        "Header equals {'mykey': 'swam-qesmvalue'}": (msg) =>
+          "mykey" in msg.headers &&
+          String.fromCharCode(...msg.headers["mykey"]) == "swam-qesmvalue",
+        "Time is past": (msg) => new Date(msg["time"]) < new Date(),
+        "Partition is zero": (msg) => msg["partition"] == 0,
+        "Offset is gte zero": (msg) => msg["offset"] >= 0,
+        "High watermark is gte zero": (msg) => msg["highWaterMark"] >= 0,
+       });
+   }
+   catch (error) {
+     log("this"+ this);
+     log("error"+error);
+     log("error.message"+error.message);
+   }
   }
   let elapsed=new Date()-dateSart;
   log("Elapsed Time: " + elapsed + "(ms)");
