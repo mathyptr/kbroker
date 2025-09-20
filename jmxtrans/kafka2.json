@@ -1,0 +1,579 @@
+{
+  "servers": [
+    {
+        "port" : "6666",
+        "host" : "broker2",
+        "alias": "kafka-2",
+        "numQueryThreads": 2,
+        "runPeriodSeconds": 10,
+        "queries": [
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "java.lang:type=Memory",
+          "attr": [
+            "HeapMemoryUsage",
+            "NonHeapMemoryUsage"
+          ],
+          "resultAlias": "jvmMemory_2"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "java.lang:type=OperatingSystem",
+          "attr": [
+            "FreePhysicalMemorySize",
+            "ProcessCpuLoad",
+            "SystemCpuLoad",
+            "SystemLoadAverage_2"
+          ],
+          "resultAlias": "os"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "kafka.server:type=ReplicaManager,name=UnderReplicatedPartitions",
+          "attr": [
+            "Value"
+          ],
+          "resultAlias": "UnderReplicatedPartitions_2"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec",
+          "attr": [
+            "Count",
+            "MeanRate",
+            "OneMinuteRate",
+            "FiveMinuteRate",
+            "FifteenMinuteRate"
+          ],
+          "resultAlias": "MessagesInPerSec_2"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec,topic=*",
+          "attr": [
+            "Count",
+            "MeanRate",
+            "OneMinuteRate",
+            "FiveMinuteRate",
+            "FifteenMinuteRate"
+          ],
+          "resultAlias": "MessagesInPerSecPerTopic_2"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "kafka.server:type=BrokerTopicMetrics,name=BytesInPerSec",
+          "attr": [
+            "Count",
+            "MeanRate",
+            "OneMinuteRate",
+            "FiveMinuteRate",
+            "FifteenMinuteRate"
+          ],
+          "resultAlias": "BytesInPerSec_2"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "kafka.server:type=BrokerTopicMetrics,name=BytesInPerSec,topic=*",
+          "attr": [
+            "Count",
+            "MeanRate",
+            "OneMinuteRate",
+            "FiveMinuteRate",
+            "FifteenMinuteRate"
+          ],
+          "resultAlias": "BytesInPerSecPerTopic_2"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "kafka.server:type=BrokerTopicMetrics,name=BytesOutPerSec",
+          "attr": [
+            "Count",
+            "MeanRate",
+            "OneMinuteRate",
+            "FiveMinuteRate",
+            "FifteenMinuteRate"
+          ],
+          "resultAlias": "BytesOutPerSec_2"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "kafka.server:type=BrokerTopicMetrics,name=BytesOutPerSec,topic=*",
+          "attr": [
+            "Count",
+            "MeanRate",
+            "OneMinuteRate",
+            "FiveMinuteRate",
+            "FifteenMinuteRate"
+          ],
+          "resultAlias": "BytesOutPerSecPerTopic_2"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "kafka.server:type=BrokerTopicMetrics,name=TotalProduceRequestsPerSec",
+          "attr": [
+            "Count",
+            "MeanRate",
+            "OneMinuteRate",
+            "FiveMinuteRate",
+            "FifteenMinuteRate"
+          ],
+          "resultAlias": "TotalProduceRequestsPerSec_2"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "kafka.server:type=ReplicaManager,name=PartitionCount",
+          "attr": [
+            "Value"
+          ],
+          "resultAlias": "PartitionCount_2"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "kafka.server:type=ReplicaManager,name=LeaderCount",
+          "attr": [
+            "Value"
+          ],
+          "resultAlias": "LeaderCount_2"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "kafka.server:type=KafkaRequestHandlerPool,name=RequestHandlerAvgIdlePercent",
+          "attr": [
+            "MeanRate"
+          ],
+          "resultAlias": "RequestHandlerAvgIdlePercent_2"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "kafka.controller:type=KafkaController,name=OfflinePartitionsCount",
+          "attr": [
+            "Value"
+          ],
+          "resultAlias": "OfflinePartitionsCount_2"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "kafka.controller:type=KafkaController,name=ActiveControllerCount",
+          "attr": [
+            "Value"
+          ],
+          "resultAlias": "ActiveControllerCount_2"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "kafka.controller:type=ControllerStats,name=LeaderElectionRateAndTimeMs",
+          "attr": [
+            "Count"
+          ],
+          "resultAlias": "LeaderElectionRateAndTimeMs_2"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "kafka.controller:type=ControllerStats,name=UncleanLeaderElectionsPerSec",
+          "attr": [
+            "Count"
+          ],
+          "resultAlias": "UncleanLeaderElectionsPerSec_2"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "kafka.network:type=RequestMetrics,name=RequestsPerSec,request=Produce",
+          "attr": [
+            "Count",
+            "MeanRate",
+            "OneMinuteRate",
+            "FiveMinuteRate",
+            "FifteenMinuteRate"
+          ],
+          "resultAlias": "ProduceRequestsPerSec_2"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "kafka.network:type=RequestMetrics,name=RequestsPerSec,request=FetchConsumer",
+          "attr": [
+            "Count",
+            "MeanRate",
+            "OneMinuteRate",
+            "FiveMinuteRate",
+            "FifteenMinuteRate"
+          ],
+          "resultAlias": "FetchConsumerRequestsPerSec_2"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "kafka.network:type=RequestMetrics,name=RequestsPerSec,request=FetchFollower",
+          "attr": [
+            "Count",
+            "MeanRate",
+            "OneMinuteRate",
+            "FiveMinuteRate",
+            "FifteenMinuteRate"
+          ],
+          "resultAlias": "FetchFollowerRequestsPerSec_2"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "kafka.network:type=RequestMetrics,name=TotalTimeMs,request=Produce",
+          "attr": [
+            "Count",
+            "Min",
+            "Max",
+            "Mean",
+            "StdDev",
+            "50thPercentile",
+            "75thPercentile",
+            "95thPercentile",
+            "98thPercentile",
+            "99thPercentile",
+            "999thPercentile"
+          ],
+          "resultAlias": "ProduceTotalTimeMs_2"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "kafka.network:type=RequestMetrics,name=TotalTimeMs,request=FetchConsumer",
+          "attr": [
+            "Count",
+            "Min",
+            "Max",
+            "Mean",
+            "StdDev",
+            "50thPercentile",
+            "75thPercentile",
+            "95thPercentile",
+            "98thPercentile",
+            "99thPercentile",
+            "999thPercentile"
+          ],
+          "resultAlias": "FetchConsumerTotalTimeMs_2"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "kafka.network:type=RequestMetrics,name=TotalTimeMs,request=FetchFollower",
+          "attr": [
+            "Count",
+            "Min",
+            "Max",
+            "Mean",
+            "StdDev",
+            "50thPercentile",
+            "75thPercentile",
+            "95thPercentile",
+            "98thPercentile",
+            "99thPercentile",
+            "999thPercentile"
+          ],
+          "resultAlias": "FetchFollowerTotalTimeMs_2"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "kafka.network:type=RequestMetrics,name=RequestQueueTimeMs,request=FetchFollower",
+          "attr": [
+            "Count",
+            "Min",
+            "Max",
+            "Mean",
+            "StdDev",
+            "50thPercentile",
+            "75thPercentile",
+            "95thPercentile",
+            "98thPercentile",
+            "99thPercentile",
+            "999thPercentile"
+          ],
+          "resultAlias": "FetchFollowerRequestQueueTimeMs_2"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "kafka.network:type=RequestMetrics,name=RequestQueueTimeMs,request=FetchConsumer",
+          "attr": [
+            "Count",
+            "Min",
+            "Max",
+            "Mean",
+            "StdDev",
+            "50thPercentile",
+            "75thPercentile",
+            "95thPercentile",
+            "98thPercentile",
+            "99thPercentile",
+            "999thPercentile"
+          ],
+          "resultAlias": "FetchConsumerRequestQueueTimeMs_2"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "kafka.network:type=RequestMetrics,name=RequestQueueTimeMs,request=Produce",
+          "attr": [
+            "Count",
+            "Min",
+            "Max",
+            "Mean",
+            "StdDev",
+            "50thPercentile",
+            "75thPercentile",
+            "95thPercentile",
+            "98thPercentile",
+            "99thPercentile",
+            "999thPercentile"
+          ],
+          "resultAlias": "ProduceRequestQueueTimeMs_2"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "kafka.network:type=SocketServer,name=NetworkProcessorAvgIdlePercent",
+          "attr": [
+            "Value"
+          ],
+          "resultAlias": "NetworkProcessorAvgIdlePercent_2"
+        },
+        {
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://influxdb:8086/",
+              "database": "k6kafka",
+              "username": "admin",
+              "password": "admin"
+            }
+          ],
+          "obj": "kafka.log:type=LogFlushStats,name=LogFlushRateAndTimeMs",
+          "attr": [
+            "MeanRate",
+            "OneMinuteRate",
+            "FiveMinuteRate",
+            "FifteenMinuteRate",
+            "50thPercentile",
+            "Min",
+            "Mean",
+            "StdDev",
+            "75thPercentile",
+            "95thPercentile",
+            "98thPercentile",
+            "99thPercentile",
+            "999thPercentile",
+            "Count",
+            "Max"
+          ],
+          "resultAlias": "LogFlush_2"
+        }
+      ]
+    }
+  ]
+}

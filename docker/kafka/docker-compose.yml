@@ -150,6 +150,7 @@ services:
         image: kffl/speedbump:latest
         command: --latency=1000ms --sine-amplitude=1000ms --sine-period=1m --port=8003 kafka3:9092
     jmxtrans:
+        container_name: jmxtrans         
         image: jmxtrans/jmxtrans
         volumes: 
-            - ./jmxtrans:/var/lib/jmxtrans 
+            - ./jmxtrans:/var/lib/jmxtrans
