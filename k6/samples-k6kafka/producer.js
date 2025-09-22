@@ -95,19 +95,10 @@ function getNumMsg(){
      return distrVA();
 };
 
-export default function () {
-  log("Connect to broker: "+brokers[connectToBroker_index]);    
-  let nmsg=getNumMsg();
-  for ( let k=1; k <= numBurstExec ; k++) {
-   let dateSart=new Date();
-   let msg=[];
-   let i = 0;
-   let j = 0;  
-   let z = 1;  
-   log("Burst num: " + k + " start at "+new Date());
-   while ( i < nmsg) {
-    msg=[];
-    for (j = 0; j < batchSize*num_partition && i+j < nmsg ; j++) {
+
+function produceMsg(nmaxmsg){
+    let msg=[];
+    for (let j = 0; j < batchSize*num_partition && j < nmaxmsg ; j++) {
      msg.push(
       {
         key: schemaRegistry.serialize({
@@ -125,14 +116,35 @@ export default function () {
       },  
      );
     }
-    i=i+j;
-    z=z+1;
-    log("Sending messages... " + j + " at "+new Date());
+    return msg;
+};
+
+function writeMsg(msg){
+    let nmsgProduct=msg.length;
+    log("Sending messages... " + nmsgProduct + " at "+new Date());
     writer.produce({ messages: msg });
-    msgSentMisure.add(j);
+    msgSentMisure.add(nmsgProduct);
+    log("Messages sent: " + nmsgProduct + " at "+new Date());
+};
+
+export default function () {
+  log("Connect to broker: "+brokers[connectToBroker_index]);    
+  let nmsg=getNumMsg();
+  for ( let k=1; k <= numBurstExec ; k++) {
+   let dateSart=new Date();
+   let msg=[];
+   let i = 0;
+   let z = 1;  
+   let nmsgProduct= 0;
+   log("Burst num: " + k + " start at "+new Date());
+   while ( i < nmsg) {
+    msg=produceMsg(nmsg-i);
+    nmsgProduct=msg.length;
+    i=i+nmsgProduct;
+    z=z+1;
+    writeMsg(msg );
     msgCountMisure.add(i);
     totalProduceRequest.add(z);
-    log("Messages sent: " + j + " at "+new Date());
     log("Total Messages sent: " + i + " at "+new Date());
    }
    let elapsed=new Date()-dateSart;
