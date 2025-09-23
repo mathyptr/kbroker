@@ -21,7 +21,7 @@ per la scrittura e la lettura di messaggi, per la creazione di topics e per la l
 
 Sono stati realizzati i seguenti script per implementare le funzionalità del produttore e consumatore:
 
-_config.js_
+_config.json_
 contiene i parametri di configurazione per i vari script come per esempio la lista dei broker, il nome del topic, il numero di partizioni e diversi parametri utilizzati dal produttore e dal consumatore (batchSize, batchTimeout, vus, iterations, maxDuration...)
 
 _create_topic.js_
@@ -31,10 +31,10 @@ _delete_topic.js_
 cancella il topic indicato dal parametro "topic_string" presente nel file config.js
 
 _producer.js_
-ccrive su Kafka un numero di messaggi pari al parametro "writer_num_messages" nel topic indicato dal parametro "topic_string" parametri presenti nel file config.js
+scrive su Kafka un numero di messaggi pari al parametro "writer_num_messages" nel topic indicato dal parametro "topic_string" parametri presenti nel file config.js
 
 _consumer.js_
-cegge da Kafka un numero di messaggi pari al parametro "reader_num_messages" nel topic indicato dal parametro "topic_string" parametri presenti nel file config.js
+legge da Kafka un numero di messaggi pari al parametro "reader_num_messages" nel topic indicato dal parametro "topic_string" parametri presenti nel file config.js
 
 
 ## Esecuzione script
