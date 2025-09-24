@@ -10,6 +10,7 @@ import {
 } from "k6/x/kafka"; // import kafka extension
 
 const msgCountMisure = new Counter('custom_kafka_reader_msg_count');
+const firstMsgTime   = new Counter('custom_kafka_reader_first_msg_time');
 
 // load test config, used to populate exported options object:
 const config = JSON.parse(open('./config/config.json'));
@@ -20,6 +21,7 @@ const nmsg = config.reader_num_messages;
 const consumeLimit= config.reader_consumeLimit;
 const repetitions = config.reader_repetitions;
 const evalPeriod = config.reader_evalPeriod;
+const checkM = config.reader_checkMsg;
 
 const executor = config.reader_k6_executor;
 const vus= config.reader_k6_vus;
@@ -57,21 +59,12 @@ function log(str){
         console.log(str);
 };
 
-export default function () {
- log("Connect to broker: "+brokers[connectToBroker_index]);
- for ( let k=1; k <= repetitions ; k++) {
-  let dateSart=new Date();
-  for (let j = 0; j < nmsg ; j=j+consumeLimit) {
-   try {
-       let messages = reader.consume({ limit: consumeLimit });
-       msgCountMisure.add(messages.length);
-       log("Read messages: " + messages.length);
-       log("Total Read messages: " + j);
 
+
+function checkMsg(messages){
        check(messages, {
         " messages are received": (messages) => messages.length == consumeLimit,
        });
-
        check(messages[0], {
         "Topic equals to swam-qesm_topic": (msg) => msg["topic"] == topic,
         "Key is a string and is correct": (msg) =>
@@ -96,6 +89,22 @@ export default function () {
         "Offset is gte zero": (msg) => msg["offset"] >= 0,
         "High watermark is gte zero": (msg) => msg["highWaterMark"] >= 0,
        });
+};
+
+export default function () {
+ log("Connect to broker: "+brokers[connectToBroker_index]);
+ for ( let k=1; k <= repetitions ; k++) {
+  let dateSart=new Date();
+  for (let j = 0; j < nmsg ; j=j+consumeLimit) {
+   try {
+       let messages = reader.consume({ limit: consumeLimit });
+       if(messages.length!=0)
+        firstMsgTime.add(new Date());
+       msgCountMisure.add(messages.length);
+       log("Read messages: " + messages.length);
+       log("Total Read messages: " + j);
+       if(checkM==1)
+           checkMsg(messages);
    }
    catch (error) {
      log("this"+ this);

@@ -13,6 +13,7 @@ import {
 const msgCountMisure = new Counter('custom_kafka_writer_msg_count');
 const msgSentMisure = new Counter('custom_kafka_writer_msg');
 const totalProduceRequest = new Counter('custom_kafka_writer_totalProduceRequest');
+const firstMsgTime = new Counter('custom_kafka_writer_first_msg_time');
 
 // load test config, used to populate exported options object:
 const config = JSON.parse(open('./config/config.json'));
@@ -31,6 +32,7 @@ const numBurstExec= config.writer_numBurstExec;
 const evalPeriod= config.writer_evalPeriod;
 const distr_va = config.writer_distr_va;
 const nmsg_test = config.writer_num_messages;
+const unitIntervalTime = config.unitIntervalTime;
 
 const executor = config.writer_k6_executor;
 const vus= config.writer_k6_vus;
@@ -85,14 +87,20 @@ function log(str){
 
 
 function distrVA(){
-    return Math.floor(Math.random() * nmsg_test)+1;
+    return Math.floor(Math.random() * batchSize*num_partition-1);
 };
 
 function getNumMsg(){
+    let n=0;
     if(distr_va==0)
-        return nmsg_test;
+        n= nmsg_test;
     else
-     return distrVA();
+        if (Math.round(Math.random()))
+            n=batchSize*num_partition;
+        else
+            n=distrVA();
+      log("numMsg: " + n);
+     return n;
 };
 
 
@@ -119,6 +127,17 @@ function produceMsg(nmaxmsg){
     return msg;
 };
 
+
+function timeToBuildMsg(lamda){
+    let t=0;
+    for (let i = 0;i < lamda ; i++) {
+        let u=Math.floor(Math.random() * lamda)+1;
+        t=t+Math.log(u)/lamda;   
+    }
+    log("timeToBuildMsg: " + t);
+    return t;
+};
+
 function writeMsg(msg){
     let nmsgProduct=msg.length;
     log("Sending messages... " + nmsgProduct + " at "+new Date());
@@ -127,34 +146,37 @@ function writeMsg(msg){
     log("Messages sent: " + nmsgProduct + " at "+new Date());
 };
 
-export default function () {
-  log("Connect to broker: "+brokers[connectToBroker_index]);    
-  let nmsg=getNumMsg();
-  for ( let k=1; k <= numBurstExec ; k++) {
-   let dateSart=new Date();
-   let msg=[];
-   let i = 0;
-   let z = 1;  
-   let nmsgProduct= 0;
-   log("Burst num: " + k + " start at "+new Date());
-   while ( i < nmsg) {
-    msg=produceMsg(nmsg-i);
-    nmsgProduct=msg.length;
-    i=i+nmsgProduct;
-    z=z+1;
-    writeMsg(msg );
-    msgCountMisure.add(i);
-    totalProduceRequest.add(z);
-    log("Total Messages sent: " + i + " at "+new Date());
-   }
+
+function getSomeSleep(dateSart){
    let elapsed=new Date()-dateSart;
    log("Elapsed Time: " + elapsed + "(ms)");
-   log("Burst num. " + k + " end at "+new Date());
    if(elapsed<evalPeriod) {
        log("Sleep for a while "+new Date());
        sleep((evalPeriod-elapsed)/1000)
        log("Wake up after sleep "+new Date());
    }
+}
+
+export default function () {
+  log("Connect to broker: "+brokers[connectToBroker_index]);  
+  let z = 0;    
+  for ( let k=1; k <= numBurstExec ; k++) {
+   let nmsg=getNumMsg();
+   let dateSart=new Date();
+   let msg=[];
+
+   log("Burst num: " + k + " start at "+new Date());
+
+   msg=produceMsg(nmsg);
+   let t=timeToBuildMsg(nmsg);
+   firstMsgTime.add(new Date());
+   sleep(t*unitIntervalTime);
+   writeMsg(msg );
+   z=z+1;
+   msgCountMisure.add(nmsg);
+   totalProduceRequest.add(z);
+   getSomeSleep(dateSart);
+   log("Burst num. " + k + " end at "+new Date());
  }
 }
 
