@@ -26,11 +26,12 @@ const msg_value_string = config.msg_value_string;
 const num_partition=config.num_partition;
 const batchSize= config.writer_batchSize;
 const batchBytes= config.writer_batchBytes;
-const batchTimeout= config.writer_batchTimeout;
+const timeOut= config.writer_batchTimeout;
 const writeTimeout= config.writer_writeTimeout;
 const numBurstExec= config.writer_numBurstExec;
 const evalPeriod= config.writer_evalPeriod;
 const distr_va = config.writer_distr_va;
+const produceVersion = config.writer_produceVersion;
 const nmsg_test = config.writer_num_messages;
 const unitIntervalTime = config.unitIntervalTime;
 
@@ -39,7 +40,15 @@ const vus= config.writer_k6_vus;
 const iterations = config.writer_k6_iterations;
 const maxDuration = config.writer_k6_maxDuration;
 
-const debug = config.debug
+const debug = config.debug;
+
+let   batchTimeout=0;
+
+if (produceVersion == 0) {
+  batchTimeout=timeOut;
+
+}
+
 
 //const numBurstExec = null ?? 1;
 
@@ -104,9 +113,15 @@ function getNumMsg(){
 };
 
 
-function produceMsg(nmaxmsg){
+function buildMsg_v0(nmaxmsg){
     let msg=[];
+    let t=0;
+    let lambda = nmaxmsg;
+
     for (let j = 0; j < batchSize*num_partition && j < nmaxmsg ; j++) {
+     let u=Math.floor(Math.random() * lambda)+1;
+     t=t+Math.log(u)/lambda;   
+     let ts=new Date();
      msg.push(
       {
         key: schemaRegistry.serialize({
@@ -120,19 +135,77 @@ function produceMsg(nmaxmsg){
         headers: {
           mykey: headers_key,
         },
-        time: new Date(), // timestamp
+        time: ts, // timestamp
       },  
      );
+    if(j==0)
+        firstMsgTime.add(ts);
     }
-    return msg;
+    log("timeToBuildMsg: " + t);
+    return [msg,t];
 };
 
 
-function timeToBuildMsg(lamda){
+function buildMsg_v1(nmaxmsg){
+    let msg=[];
     let t=0;
-    for (let i = 0;i < lamda ; i++) {
-        let u=Math.floor(Math.random() * lamda)+1;
-        t=t+Math.log(u)/lamda;   
+    let baseTime = new Date();
+    let d= new Date();
+    for (let j = 0; j < batchSize*num_partition ; j++) {
+     t=t-Math.log(Math.random())/1000;   
+     if(t>timeOut){
+        t=timeOut;
+        break;
+     }
+     else{
+
+         d.setSeconds(baseTime.getSeconds()+t);
+         msg.push(
+          {
+            key: schemaRegistry.serialize({
+              data: msg_key_string, // msg key
+              schemaType: SCHEMA_TYPE_STRING,
+            }),
+            value: schemaRegistry.serialize({
+              data: msg_value_string, // msg value
+              schemaType: SCHEMA_TYPE_STRING,
+            }),
+            headers: {
+              mykey: headers_key,
+            },
+            time: d, // timestamp
+          },  
+         );
+         if(j==0)
+            firstMsgTime.add(d);
+     }
+    }
+    log("timeToBuildMsg: " + d);
+
+    baseTime=d;
+    return [msg,t];
+};
+
+
+
+function produceMsg(nmaxmsg){
+    let msg=[];
+    let t=0;
+
+    if(produceVersion==0)
+        [msg,t]=buildMsg_v0(nmaxmsg);
+    else
+        [msg,t]=buildMsg_v1(nmaxmsg);
+
+    return [msg,t];
+};
+
+
+function timeToBuildMsg(lambda){
+    let t=0;
+    for (let i = 0;i < lambda ; i++) {
+        let u=Math.floor(Math.random() * lambda)+1;
+        t=t+Math.log(u)/lambda;   
     }
     log("timeToBuildMsg: " + t);
     return t;
@@ -161,21 +234,23 @@ export default function () {
   log("Connect to broker: "+brokers[connectToBroker_index]);  
   let z = 0;    
   for ( let k=1; k <= numBurstExec ; k++) {
+   log("Burst num: " + k + " start at "+new Date());
+
    let nmsg=getNumMsg();
    let dateSart=new Date();
    let msg=[];
+   let t=0;
 
-   log("Burst num: " + k + " start at "+new Date());
+   [msg,t]=produceMsg(nmsg);
 
-   msg=produceMsg(nmsg);
-   let t=timeToBuildMsg(nmsg);
-   firstMsgTime.add(new Date());
    sleep(t*unitIntervalTime);
    writeMsg(msg );
    z=z+1;
    msgCountMisure.add(nmsg);
    totalProduceRequest.add(z);
+
    getSomeSleep(dateSart);
+
    log("Burst num. " + k + " end at "+new Date());
  }
 }
