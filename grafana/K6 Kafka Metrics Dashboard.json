@@ -1,41 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_INFLUXDB",
-      "label": "influxdb",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "influxdb",
-      "pluginName": "InfluxDB"
-    }
-  ],
-  "__elements": {},
-  "__requires": [
-    {
-      "type": "panel",
-      "id": "gauge",
-      "name": "Gauge",
-      "version": ""
-    },
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "12.0.2"
-    },
-    {
-      "type": "datasource",
-      "id": "influxdb",
-      "name": "InfluxDB",
-      "version": "1.0.0"
-    },
-    {
-      "type": "panel",
-      "id": "timeseries",
-      "name": "Time series",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -55,14 +18,14 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
+  "id": 4,
   "links": [],
   "liveNow": true,
   "panels": [
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "${DS_INFLUXDB}"
+        "uid": "detdpvlkcfdvkd"
       },
       "fieldConfig": {
         "defaults": {
@@ -76,7 +39,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
-            "barWidthFactor": 0.6,
+            "barWidthFactor": 0.2,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -86,14 +49,14 @@
               "viz": false
             },
             "insertNulls": false,
-            "lineInterpolation": "linear",
+            "lineInterpolation": "smooth",
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "auto",
-            "spanNulls": false,
+            "showPoints": "always",
+            "spanNulls": true,
             "stacking": {
               "group": "A",
               "mode": "none"
@@ -124,7 +87,7 @@
         "x": 0,
         "y": 0
       },
-      "id": 7,
+      "id": 11,
       "options": {
         "legend": {
           "calcs": [],
@@ -141,21 +104,9 @@
       "pluginVersion": "12.0.2",
       "targets": [
         {
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "kafka_writer_batch_size",
+          "groupBy": [],
+          "hide": false,
+          "measurement": "custom_kafka_writer_first_msg_time",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",
@@ -167,27 +118,103 @@
                   "value"
                 ],
                 "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
               }
             ]
           ],
-          "tags": [],
+          "tags": []
+        },
+        {
           "datasource": {
             "type": "influxdb",
-            "uid": "${DS_INFLUXDB}"
+            "uid": "detdpvlkcfdvkd"
+          },
+          "groupBy": [],
+          "hide": false,
+          "measurement": "custom_kafka_reader_first_msg_time",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "B",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              }
+            ]
+          ],
+          "tags": []
+        },
+        {
+          "datasource": {
+            "name": "Expression",
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "downsampler": "last",
+          "expression": "A",
+          "hide": false,
+          "refId": "C",
+          "type": "resample",
+          "upsampler": "pad",
+          "window": "0.5s"
+        },
+        {
+          "datasource": {
+            "name": "Expression",
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "downsampler": "last",
+          "expression": "B",
+          "hide": false,
+          "refId": "D",
+          "type": "resample",
+          "upsampler": "pad",
+          "window": "0.5s"
+        }
+      ],
+      "title": "latency",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "lag",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "C {__name__=\"custom_kafka_writer_first_msg_time.value\"}"
+                }
+              },
+              "operator": "-",
+              "right": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "D {__name__=\"custom_kafka_reader_first_msg_time.value\"}"
+                }
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "include": [
+                "custom_kafka_writer_first_msg_time.last",
+                "C {__name__=\"custom_kafka_reader_first_msg_time.last\"}"
+              ],
+              "reducer": "diff"
+            },
+            "replaceFields": true
           }
         }
       ],
-      "title": "Total batch size",
       "type": "timeseries"
     },
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "${DS_INFLUXDB}"
+        "uid": "detdpvlkcfdvkd"
       },
       "fieldConfig": {
         "defaults": {
@@ -268,11 +295,7 @@
               }
             ]
           ],
-          "tags": [],
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_INFLUXDB}"
-          }
+          "tags": []
         }
       ],
       "title": "Maximum batch size",
@@ -281,7 +304,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "${DS_INFLUXDB}"
+        "uid": "detdpvlkcfdvkd"
       },
       "fieldConfig": {
         "defaults": {
@@ -312,7 +335,7 @@
               "type": "linear"
             },
             "showPoints": "auto",
-            "spanNulls": true,
+            "spanNulls": false,
             "stacking": {
               "group": "A",
               "mode": "none"
@@ -333,26 +356,9 @@
                 "value": 80
               }
             ]
-          },
-          "unit": "short"
-        },
-        "overrides": [
-          {
-            "__systemRef": "hideSeriesFrom",
-            "matcher": {
-              "id": "byNames",
-              "options": {
-                "mode": "exclude",
-                "names": [
-                  "kafka_reader_message_bytes.mean"
-                ],
-                "prefix": "All except:",
-                "readOnly": true
-              }
-            },
-            "properties": []
           }
-        ]
+        },
+        "overrides": []
       },
       "gridPos": {
         "h": 8,
@@ -360,7 +366,7 @@
         "x": 0,
         "y": 8
       },
-      "id": 6,
+      "id": 7,
       "options": {
         "legend": {
           "calcs": [],
@@ -391,7 +397,7 @@
               "type": "fill"
             }
           ],
-          "measurement": "kafka_reader_message_bytes",
+          "measurement": "kafka_writer_batch_size",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",
@@ -410,20 +416,16 @@
               }
             ]
           ],
-          "tags": [],
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_INFLUXDB}"
-          }
+          "tags": []
         }
       ],
-      "title": "Total bytes consumed",
+      "title": "Total batch size",
       "type": "timeseries"
     },
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "${DS_INFLUXDB}"
+        "uid": "detdpvlkcfdvkd"
       },
       "fieldConfig": {
         "defaults": {
@@ -561,16 +563,12 @@
               }
             ]
           ],
-          "tags": [],
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_INFLUXDB}"
-          }
+          "tags": []
         },
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "${DS_INFLUXDB}"
+            "uid": "detdpvlkcfdvkd"
           },
           "groupBy": [
             {
@@ -615,7 +613,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "${DS_INFLUXDB}"
+        "uid": "detdpvlkcfdvkd"
       },
       "fieldConfig": {
         "defaults": {
@@ -667,9 +665,26 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "short"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "kafka_reader_message_bytes.mean"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": []
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
@@ -677,7 +692,7 @@
         "x": 0,
         "y": 16
       },
-      "id": 8,
+      "id": 6,
       "options": {
         "legend": {
           "calcs": [],
@@ -708,7 +723,7 @@
               "type": "fill"
             }
           ],
-          "measurement": "kafka_reader_message_count",
+          "measurement": "kafka_reader_message_bytes",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",
@@ -727,20 +742,16 @@
               }
             ]
           ],
-          "tags": [],
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_INFLUXDB}"
-          }
+          "tags": []
         }
       ],
-      "title": "Total number of messages consumed",
+      "title": "Total bytes consumed",
       "type": "timeseries"
     },
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "${DS_INFLUXDB}"
+        "uid": "detdpvlkcfdvkd"
       },
       "fieldConfig": {
         "defaults": {
@@ -852,11 +863,7 @@
               }
             ]
           ],
-          "tags": [],
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_INFLUXDB}"
-          }
+          "tags": []
         }
       ],
       "title": "Total number of messages produced",
@@ -865,7 +872,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "${DS_INFLUXDB}"
+        "uid": "detdpvlkcfdvkd"
       },
       "fieldConfig": {
         "defaults": {
@@ -927,7 +934,7 @@
         "x": 0,
         "y": 24
       },
-      "id": 10,
+      "id": 8,
       "options": {
         "legend": {
           "calcs": [],
@@ -958,7 +965,7 @@
               "type": "fill"
             }
           ],
-          "measurement": "kafka_writer_write_seconds",
+          "measurement": "kafka_reader_message_count",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",
@@ -977,20 +984,16 @@
               }
             ]
           ],
-          "tags": [],
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_INFLUXDB}"
-          }
+          "tags": []
         }
       ],
-      "title": "Time it takes to write a batch of messages",
+      "title": "Total number of messages consumed",
       "type": "timeseries"
     },
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "${DS_INFLUXDB}"
+        "uid": "detdpvlkcfdvkd"
       },
       "fieldConfig": {
         "defaults": {
@@ -1102,11 +1105,7 @@
               }
             ]
           ],
-          "tags": [],
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_INFLUXDB}"
-          }
+          "tags": []
         }
       ],
       "title": "Time takes to queue a batch of messages",
@@ -1115,12 +1114,45 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "${DS_INFLUXDB}"
+        "uid": "detdpvlkcfdvkd"
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
           "mappings": [],
           "thresholds": {
@@ -1136,23 +1168,7 @@
             ]
           }
         },
-        "overrides": [
-          {
-            "__systemRef": "hideSeriesFrom",
-            "matcher": {
-              "id": "byNames",
-              "options": {
-                "mode": "exclude",
-                "names": [
-                  "kafka_reader_dial_count.mean"
-                ],
-                "prefix": "All except:",
-                "readOnly": true
-              }
-            },
-            "properties": []
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
         "h": 8,
@@ -1160,29 +1176,23 @@
         "x": 0,
         "y": 32
       },
-      "id": 1,
+      "id": 10,
       "options": {
-        "minVizHeight": 75,
-        "minVizWidth": 75,
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
         },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "sizing": "auto"
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
       },
       "pluginVersion": "12.0.2",
       "targets": [
         {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_INFLUXDB}"
-          },
           "groupBy": [
             {
               "params": [
@@ -1197,7 +1207,7 @@
               "type": "fill"
             }
           ],
-          "measurement": "kafka_reader_lag",
+          "measurement": "kafka_writer_write_seconds",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",
@@ -1219,13 +1229,13 @@
           "tags": []
         }
       ],
-      "title": "Lag between the last message offset and the current read offset",
-      "type": "gauge"
+      "title": "Time it takes to write a batch of messages",
+      "type": "timeseries"
     },
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "${DS_INFLUXDB}"
+        "uid": "detdpvlkcfdvkd"
       },
       "fieldConfig": {
         "defaults": {
@@ -1337,31 +1347,137 @@
               }
             ]
           ],
-          "tags": [],
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_INFLUXDB}"
-          }
+          "tags": []
         }
       ],
       "title": "Total bytes fetched",
       "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "detdpvlkcfdvkd"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "kafka_reader_dial_count.mean"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": []
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 40
+      },
+      "id": 1,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "detdpvlkcfdvkd"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "kafka_reader_lag",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
+      "title": "Lag between the last message offset and the current read offset",
+      "type": "gauge"
     }
   ],
-  "refresh": "5s",
+  "preload": true,
+  "refresh": "auto",
   "schemaVersion": 41,
   "tags": [],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-6h",
-    "to": "now"
+    "from": "2025-09-27T16:27:00.706Z",
+    "to": "2025-09-27T16:27:30.957Z"
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Kafka K6  Metrics Dashboard",
+  "title": "K6 Kafka  Metrics Dashboard",
   "uid": "c7277e86-7ba2-497b-876a-cc85f2978016",
-  "version": 21,
-  "weekStart": ""
+  "version": 26
 }
