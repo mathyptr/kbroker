@@ -49,29 +49,19 @@ if (produceVersion == 0) {
 
 }
 
-
 //const numBurstExec = null ?? 1;
 
 const writer = new Writer({
   brokers: brokers,
   topic: topic,
   batchSize: batchSize,
-//  batchBytes: batchBytes,
   batchTimeout: batchTimeout,
-//  writeTimeout: writeTimeout
-//  autoCreateTopic: true,
 });
 
 const connection = new Connection({
   address: brokers[connectToBroker_index],
 });
 const schemaRegistry = new SchemaRegistry();
-
-/*
-if (__VU == 0) {
-  connection.createTopic({ topic: topic });
-}
-*/
 
 
 export const options = {
@@ -94,9 +84,20 @@ function log(str){
         console.log(str);
 };
 
+function samplePoisson(lambda){
+    let l=Math.exp(-lambda);
+    let k=0;
+    let p=1;
+    do{
+        k++;
+        p = p* Math.random();
+    } while (p>l);
+    return k-1;
+};
 
 function distrVA(){
-    return Math.floor(Math.random() * batchSize*num_partition-1);
+//    return Math.floor(Math.random() * batchSize*num_partition-1);
+      return samplePoisson(batchSize*num_partition);
 };
 
 function getNumMsg(){
@@ -200,17 +201,6 @@ function produceMsg(nmaxmsg){
     return [msg,t];
 };
 
-
-function timeToBuildMsg(lambda){
-    let t=0;
-    for (let i = 0;i < lambda ; i++) {
-        let u=Math.floor(Math.random() * lambda)+1;
-        t=t+Math.log(u)/lambda;   
-    }
-    log("timeToBuildMsg: " + t);
-    return t;
-};
-
 function writeMsg(msg){
     let nmsgProduct=msg.length;
     log("Sending messages... " + nmsgProduct + " at "+new Date());
@@ -256,9 +246,6 @@ export default function () {
 }
 
 export function teardown(data) {
-  if (__VU == 0) {
-//    connection.deleteTopic(topic);
-  }
   writer.close();
   connection.close();
 }
