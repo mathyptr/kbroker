@@ -119,29 +119,32 @@ function buildMsg_v0(nmaxmsg){
     let msg=[];
     let t=0;
     let lambda = nmaxmsg;
-
-    for (let j = 0; j < batchSize*num_partition && j < nmaxmsg ; j++) {
-     let u=Math.floor(Math.random() * lambda)+1;
-     t=t+Math.log(u)/lambda;   
-     let ts=new Date();
-     msg.push(
-      {
-        key: schemaRegistry.serialize({
-          data: msg_key_string, // msg key
-          schemaType: SCHEMA_TYPE_STRING,
-        }),
-        value: schemaRegistry.serialize({
-          data: msg_value_string, // msg value
-          schemaType: SCHEMA_TYPE_STRING,
-        }),
-        headers: {
-          mykey: headers_key,
-        },
-        time: ts, // timestamp
-      },  
-     );
-    if(j==0)
-        firstMsgTime.add(ts);
+    let i=0;
+     while ( i < nmaxmsg) {
+        for (let j = 0; j < batchSize*num_partition && j < nmaxmsg-i ; j++) {
+         let u=Math.floor(Math.random() * lambda)+1;
+         t=t+Math.log(u)/lambda;   
+         let ts=new Date();
+         msg.push(
+          {
+            key: schemaRegistry.serialize({
+              data: msg_key_string, // msg key
+              schemaType: SCHEMA_TYPE_STRING,
+            }),
+            value: schemaRegistry.serialize({
+              data: msg_value_string, // msg value
+              schemaType: SCHEMA_TYPE_STRING,
+            }),
+            headers: {
+              mykey: headers_key,
+            },
+            time: ts, // timestamp
+          },  
+         );
+         if(j==0 && i==0)
+            firstMsgTime.add(ts);
+        }
+        i=i+msg.length;
     }
     log("timeToBuildMsg: " + t);
     return [msg,t];
@@ -150,18 +153,30 @@ function buildMsg_v0(nmaxmsg){
 
 function buildMsg_v1(nmaxmsg){
     let msg=[];
+    let timesMsg=[];
     let t=0;
-    let baseTime = new Date();
-    let d= new Date();
 
     let j = 0;
     while( j < batchSize*num_partition) {
+
      t=t-Math.log(Math.random())/100;   
      if(t>timeOut/1000000000){
         t=timeOut;
         break;
      }
-     else if(j<nmaxmsg){
+     else if(j<nmaxmsg){        
+         timesMsg[j]=t;
+         j=j+1;
+     }
+    }
+
+    let baseTime = new Date();
+    let d= new Date();
+
+
+    let nm=j;
+    for(j=0;j<nm;j++){
+         t=timesMsg[j];
          d.setSeconds(baseTime.getSeconds()+t);
          msg.push(
           {
@@ -170,7 +185,7 @@ function buildMsg_v1(nmaxmsg){
               schemaType: SCHEMA_TYPE_STRING,
             }),
             value: schemaRegistry.serialize({
-              data: nmaxmsg.toString(), // msg value
+              data: nm.toString(), // msg value
               schemaType: SCHEMA_TYPE_STRING,
             }),
             headers: {
@@ -180,13 +195,12 @@ function buildMsg_v1(nmaxmsg){
           },  
          );
          if(j==0)
-            firstMsgTime.add(d);
-         j=j+1;
-     }
+            firstMsgTime.add(d);  
     }
-    log("timeToBuildMsg: " + d);
 
+    log("timeToBuildMsg: " + d);
     baseTime=d;
+
     return [msg,t];
 };
 
