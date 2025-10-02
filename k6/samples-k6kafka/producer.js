@@ -7,6 +7,7 @@ import {
   Connection,
   SchemaRegistry,
   SCHEMA_TYPE_STRING,
+  SCHEMA_TYPE_BYTES,
 } from "k6/x/kafka"
 
 
@@ -109,8 +110,8 @@ function getNumMsg(){
             n=batchSize*num_partition;
         else
             n=distrVA();
-      log("numMsg: " + n);
-     return n;
+    log("numMsg: " + n);
+    return n;
 };
 
 
@@ -152,14 +153,15 @@ function buildMsg_v1(nmaxmsg){
     let t=0;
     let baseTime = new Date();
     let d= new Date();
-    for (let j = 0; j < batchSize*num_partition ; j++) {
-     t=t-Math.log(Math.random())/1000;   
-     if(t>timeOut){
+
+    let j = 0;
+    while( j < batchSize*num_partition) {
+     t=t-Math.log(Math.random())/100;   
+     if(t>timeOut/1000000000){
         t=timeOut;
         break;
      }
-     else{
-
+     else if(j<nmaxmsg){
          d.setSeconds(baseTime.getSeconds()+t);
          msg.push(
           {
@@ -168,7 +170,7 @@ function buildMsg_v1(nmaxmsg){
               schemaType: SCHEMA_TYPE_STRING,
             }),
             value: schemaRegistry.serialize({
-              data: msg_value_string, // msg value
+              data: nmaxmsg.toString(), // msg value
               schemaType: SCHEMA_TYPE_STRING,
             }),
             headers: {
@@ -179,6 +181,7 @@ function buildMsg_v1(nmaxmsg){
          );
          if(j==0)
             firstMsgTime.add(d);
+         j=j+1;
      }
     }
     log("timeToBuildMsg: " + d);
@@ -223,6 +226,7 @@ function getSomeSleep(dateSart){
 export default function () {
   log("Connect to broker: "+brokers[connectToBroker_index]);  
   let z = 0;    
+  let msgtot = 0;    
   for ( let k=1; k <= numBurstExec ; k++) {
    log("Burst num: " + k + " start at "+new Date());
 
@@ -234,9 +238,12 @@ export default function () {
    [msg,t]=produceMsg(nmsg);
 
    sleep(t*unitIntervalTime);
-   writeMsg(msg );
+   writeMsg(msg);
    z=z+1;
-   msgCountMisure.add(nmsg);
+   msgtot=msgtot+msg.length;
+   log("numMsg Sent: " + msg.length);
+   log("Total numMsg Sent: " + msgtot);
+   msgCountMisure.add(msg.length);
    totalProduceRequest.add(z);
 
    getSomeSleep(dateSart);

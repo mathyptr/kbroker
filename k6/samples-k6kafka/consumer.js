@@ -7,6 +7,7 @@ import {
   Connection,
   SchemaRegistry,
   SCHEMA_TYPE_STRING,
+  SCHEMA_TYPE_BYTES,
 } from "k6/x/kafka"; // import kafka extension
 
 const msgCountMisure = new Counter('custom_kafka_reader_msg_count');
@@ -22,6 +23,7 @@ const consumeLimit= config.reader_consumeLimit;
 const repetitions = config.reader_repetitions;
 const evalPeriod = config.reader_evalPeriod;
 const checkM = config.reader_checkMsg;
+const consumerVersion = config.reader_consumerVersion;
 
 const executor = config.reader_k6_executor;
 const vus= config.reader_k6_vus;
@@ -91,8 +93,8 @@ function checkMsg(messages){
        });
 };
 
-export default function () {
- log("Connect to broker: "+brokers[connectToBroker_index]);
+
+function readMsg_v0(){
  for ( let k=1; k <= repetitions ; k++) {
   let dateSart=new Date();
   for (let j = 0; j < nmsg ; j=j+consumeLimit) {
@@ -102,7 +104,6 @@ export default function () {
         firstMsgTime.add(new Date());
        msgCountMisure.add(messages.length);
        log("Read messages: " + messages.length);
-       log("Total Read messages: " + j);
        if(checkM==1)
            checkMsg(messages);
    }
@@ -112,6 +113,7 @@ export default function () {
      log("error.message"+error.message);
    }
   }
+  log("Total Read messages: " + (k+1)*nmsg);
   let elapsed=new Date()-dateSart;
   log("Elapsed Time: " + elapsed + "(ms)");
   log("Iter num. " + k + " end at "+new Date());
@@ -121,6 +123,59 @@ export default function () {
        log("Wake up after sleep "+new Date());
   }
  }
+};
+
+function readMsg_v1(){
+ let nm=0;
+ let msgtot=0;
+ for ( let k=1; k <= repetitions ; k++) {
+  let dateSart=new Date();
+  try {
+      nm=0;
+      let messages = reader.consume({ limit: 1 });
+      if(messages.length!=0){
+          nm=parseInt(schemaRegistry.deserialize({
+            data: messages[0].value,
+            schemaType:  SCHEMA_TYPE_STRING,
+              }));
+          log("nm: " + nm);
+          firstMsgTime.add(new Date());
+          if(nm>1){
+             try {
+                 let messages = reader.consume({ limit: nm-1 });
+                 log("Msg read: "+messages.length);
+             }
+             catch (error) {
+                 log("this"+ this);
+                 log("error"+error);
+                 log("error.message"+error.message);
+             }
+          }
+          msgCountMisure.add(messages.length);
+      }
+  }
+  catch (error) {
+     log("Error: error.message "+error.message);
+  }
+  log("k: " + k);
+  log("nm: " + nm);
+  log("msgRead: " + nm);
+  msgtot=msgtot+nm;
+  log("Total Read messages: " + msgtot);
+  let elapsed=new Date()-dateSart;
+  log("Elapsed Time: " + elapsed + "(ms)");
+  log("Iter num. " + k + " end at "+new Date());
+ }
+};
+
+
+export default function () {
+ log("Connect to broker: "+brokers[connectToBroker_index]);
+
+ if(consumerVersion==0)
+    readMsg_v0();
+ else
+    readMsg_v1();
 }
 
 export function teardown(data) {
