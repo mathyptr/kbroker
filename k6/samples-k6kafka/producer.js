@@ -7,7 +7,6 @@ import {
   Connection,
   SchemaRegistry,
   SCHEMA_TYPE_STRING,
-  SCHEMA_TYPE_BYTES,
 } from "k6/x/kafka"
 
 
@@ -59,9 +58,7 @@ const writer = new Writer({
   batchTimeout: batchTimeout,
 });
 
-const connection = new Connection({
-  address: brokers[connectToBroker_index],
-});
+
 const schemaRegistry = new SchemaRegistry();
 
 
@@ -96,9 +93,10 @@ function samplePoisson(lambda){
     return k-1;
 };
 
-function distrVA(){
+function distrVA(nmsg_test){
 //    return Math.floor(Math.random() * batchSize*num_partition-1);
-      return samplePoisson(batchSize*num_partition);
+//      return samplePoisson(batchSize*num_partition);
+      return samplePoisson(nmsg_test);
 };
 
 function getNumMsg(){
@@ -109,7 +107,7 @@ function getNumMsg(){
         if (Math.round(Math.random()))
             n=batchSize*num_partition;
         else
-            n=distrVA();
+            n=distrVA(nmsg_test);
     log("numMsg: " + n);
     return n;
 };
@@ -155,33 +153,42 @@ function buildMsg_v1(nmaxmsg){
     let msg=[];
     let timesMsg=[];
     let t=0;
-
+    let endmsg=false
     let j = 0;
-    while( j < batchSize*num_partition) {
+    while( j < batchSize*num_partition && endmsg!=true) {
 
-     t=t-Math.log(Math.random())/100;   
-     if(t>timeOut/1000000000){
+     t=t-Math.log(Math.random());   
+     if(t>timeOut){
         t=timeOut;
-        break;
+        log("TIMEOUT t: " + t);
+        endmsg=true;
      }
-     else if(j<nmaxmsg){        
+
+     if(j<nmaxmsg){        
          timesMsg[j]=t;
          j=j+1;
      }
-    }
+     else{
+        t=timeOut;
+        log("TIMEOUT t: " + t);
+        endmsg=true;
+     }
 
+    }
+    log("time t: " + t);
     let baseTime = new Date();
     let d= new Date();
 
-
     let nm=j;
     for(j=0;j<nm;j++){
-         t=timesMsg[j];
-         d.setSeconds(baseTime.getSeconds()+t);
+//         t=timesMsg[j];
+//         d.setSeconds(baseTime.getSeconds()+t);
+//         d=new Date();
          msg.push(
           {
             key: schemaRegistry.serialize({
-              data: msg_key_string, // msg key
+              data: (d.getTime()).toString(), 
+//              data: msg_key_string, // msg key
               schemaType: SCHEMA_TYPE_STRING,
             }),
             value: schemaRegistry.serialize({
@@ -192,12 +199,22 @@ function buildMsg_v1(nmaxmsg){
               mykey: headers_key,
             },
             time: d, // timestamp
+
           },  
          );
-         if(j==0)
-            firstMsgTime.add(d);  
+         if(j==0){
+//            firstMsgTime.add(d);
+//            firstMsgTime.add(t);  
+//            let t= new Date()-(new Date()).setMilliseconds(0);
+//            let t = new Date()-(new Date()).setHours(0,0,0,0);
+//            log("Time: "+t);
+//            firstMsgTime.add(t); 
+            firstMsgTime.add(new Date());  
+            log("firstMsg Milliseconds: " + d.getTime());
+            log("firstMsg Milliseconds: " + msg[0]['time']);
+         }
     }
-
+    d.setSeconds(baseTime.getSeconds()+timesMsg[nm-1]);
     log("timeToBuildMsg: " + d);
     baseTime=d;
 
@@ -250,14 +267,13 @@ export default function () {
    let t=0;
 
    [msg,t]=produceMsg(nmsg);
-
    sleep(t*unitIntervalTime);
    writeMsg(msg);
    z=z+1;
    msgtot=msgtot+msg.length;
    log("numMsg Sent: " + msg.length);
    log("Total numMsg Sent: " + msgtot);
-   msgCountMisure.add(msg.length);
+   msgCountMisure.add(msgtot);
    totalProduceRequest.add(z);
 
    getSomeSleep(dateSart);
@@ -268,5 +284,4 @@ export default function () {
 
 export function teardown(data) {
   writer.close();
-  connection.close();
 }
