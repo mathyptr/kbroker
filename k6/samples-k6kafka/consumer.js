@@ -1,13 +1,13 @@
 import { check } from "k6";
 import { Counter } from 'k6/metrics';
 import { sleep } from 'k6';
+
 // import kafka extension
 import {
-  Reader,
-  Connection,
+  Reader, 
   SchemaRegistry,
   SCHEMA_TYPE_STRING,
-} from "k6/x/kafka"; // import kafka extension
+} from "k6/x/kafka";
 
 const msgCountMisure = new Counter('custom_kafka_reader_msg_count');
 const firstMsgTime   = new Counter('custom_kafka_reader_first_msg_time');
@@ -20,19 +20,21 @@ const connectToBroker_index = config.connectToBroker_index;
 const topic = config.topic_string;
 const groupID = config.groupID;
 const num_partition=config.num_partition;
+
 const nmsg = config.reader_num_messages;
 const consumeLimit= config.reader_consumeLimit;
 const repetitions = config.reader_repetitions;
 const evalPeriod = config.reader_evalPeriod;
 const checkM = config.reader_checkMsg;
 const consumerVersion = config.reader_consumerVersion;
+const debug = config.reader_debug;
 
 const executor = config.reader_k6_executor;
 const vus= config.reader_k6_vus;
 const iterations = config.reader_k6_iterations;
 const maxDuration = config.reader_k6_maxDuration;
 
-const debug = config.debug
+
 let reader={};
 
 if(num_partition>1)
@@ -40,14 +42,12 @@ if(num_partition>1)
 		brokers: brokers,
 		groupID: groupID,
 		groupTopics: [topic],
-		//offset: 0,
 		maxwait: '1s'
 	});
 else
 	reader = new Reader({
 		brokers: brokers,
 		topic: topic,
-		//offset: 0,
 		maxwait: '1s'
 	});
 
@@ -100,8 +100,6 @@ function checkMsg(messages){
           "mykey" in msg.headers &&
           String.fromCharCode(...msg.headers["mykey"]) == "swam-qesmvalue",
         "Time is past": (msg) => new Date(msg["time"]) < new Date(),
-        "Partition is zero": (msg) => msg["partition"] == 0,
-        "Offset is gte zero": (msg) => msg["offset"] >= 0,
         "High watermark is gte zero": (msg) => msg["highWaterMark"] >= 0,
        });
 };
@@ -142,6 +140,7 @@ function readMsg_v0(){
 };
 
 function readMsg_v1(){
+
  let msgtot=0;
  for ( let k=1; k <= repetitions ; k++) {
   let nm=0;
@@ -150,42 +149,32 @@ function readMsg_v1(){
   try {
       let messages = reader.consume({ limit: 1 , expectTimeout : true,});
       if(messages.length!=0){
-          let readnmsg=parseInt(schemaRegistry.deserialize({
-            data: messages[0].value,
-            schemaType:  SCHEMA_TYPE_STRING,
-              }));
-          log("Max nmsg: " + readnmsg);
-let tbuild=
- schemaRegistry.deserialize({
-        data: messages[0].key,
-        schemaType: SCHEMA_TYPE_STRING,
-      })
-          log("Producer Time1: "+tbuild);
-          let producerTime= new Date(messages[0]["time"]);
-          let d=new Date();
-          log("Producer Time: "+producerTime);
-          log("Producer Time: "+messages[0]["time"]);
-          log("Consumer Time: "+d);
-          log("Consumer Time: "+d.getTime());
-          log("latency: "+(d.getTime()-tbuild));
-          log("firstMsg Milliseconds: " + producerTime.getTime());
-//          log("firstMsg Milliseconds: " + messages[0]["time"].getTime());
+          let producerBuildTime= schemaRegistry.deserialize({
+                      data: messages[0].key,
+                      schemaType : SCHEMA_TYPE_STRING,
+                    })
+          let d=new Date();                    
+          latency.add(d.getTime()-producerBuildTime);
           firstMsgTime.add(d);
-//            let t = new Date()-(new Date()).setMilliseconds(0);
-//            let t = new Date()-(new Date()).setHours(0,0,0,0);
-//            log("Time: "+t);
-//            firstMsgTime.add(t);  
 
-          latency.add(d.getTime()-tbuild);
+          let readnmsg=parseInt(schemaRegistry.deserialize({
+                      data: messages[0].value,
+                      schemaType:  SCHEMA_TYPE_STRING,
+                    }));
+          log("Producer Build Time (ms): "+producerBuildTime);
+          log("Consumer Read Time (ms): "+d.getTime());
+          log("latency (ms): "+(d.getTime()-producerBuildTime));          
+          log("Consumer Time: "+d);
+          log("Max nmsg: " + readnmsg);
+
           nm=nm+1;
           if(readnmsg>1){
              try {
                  let messages = reader.consume({ limit:readnmsg-1 });
-                 log("Msg read: "+messages.length);
                  nm=nm+messages.length;
                  msgtot=msgtot+nm;
-                 log("Total Read messages: " + msgtot);
                  msgCountMisure.add(msgtot);
+                 log("Msg read/Total Msg read: "+messages.length+"/" + msgtot);                 
              }
              catch (error) {
                  log("***this "+ this);
@@ -199,8 +188,8 @@ let tbuild=
   catch (error) {
      log("***Error: error.message "+error.message);
   }
-//  let elapsed=new Date()-dateSart;
-//  log("Elapsed Time: " + elapsed + "(ms)");
+  let elapsed=new Date()-dateSart;
+  log("Elapsed Time: " + elapsed + "(ms)");
   log("---Iter num. " + k + " end at "+new Date());
  }
 };

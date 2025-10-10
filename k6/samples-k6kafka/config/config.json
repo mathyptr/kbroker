@@ -2,7 +2,6 @@
   "brokers" : ["broker:9092","broker2:9092","broker3:9092"],
   "connectToBroker_index" : 0,
   "topic_string" : "swam-qesm_topic_string",
-  "topic_byte" : "swam-qesm_topic_byte",
   "groupID" : "swam-qesm-groupID",	
   "headers_key" : "swam-qesmvalue",
   "msg_key_string" : "swam-qesm-test-string-key",
@@ -12,9 +11,7 @@
   "writer_distr_va" : 1,
   "writer_produceVersion" : 1,
   "writer_batchSize" : 50,
-  "writer_batchBytes" : 4096,
   "writer_batchTimeout" : 1000000,
-  "writer_writeTimeout" : 400000000000,
   "writer_num_messages" : 5000000,
   "writer_numBurstExec" : 10,
   "writer_evalPeriod" : 5000,
@@ -24,6 +21,7 @@
   "writer_k6_iterations" : 1,
   "writer_k6_maxDuration" : "20m",
   "writer_k6_executor" : "shared-iterations",
+  "writer_debug" : false,
   "reader_num_messages" : 300,
   "reader_repetitions" : 200,
   "reader_evalPeriod" : 0,
@@ -34,5 +32,5 @@
   "reader_k6_vus" : 1,
   "reader_k6_iterations" : 1,
   "reader_k6_maxDuration" : "20m",
-  "debug" : 1
+  "reader_debug" : false
 }

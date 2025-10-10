@@ -1,6 +1,7 @@
 import { check } from "k6";
 import { Counter } from 'k6/metrics';
 import { sleep } from 'k6';
+
 // import kafka extension
 import {
   Writer,
@@ -24,15 +25,17 @@ const headers_key = config.headers_key;
 const msg_key_string = config.msg_key_string;
 const msg_value_string = config.msg_value_string;
 const num_partition=config.num_partition;
+
 const batchSize= config.writer_batchSize;
-const batchBytes= config.writer_batchBytes;
 const timeOut= config.writer_batchTimeout;
-const writeTimeout= config.writer_writeTimeout;
 const numBurstExec= config.writer_numBurstExec;
 const evalPeriod= config.writer_evalPeriod;
 const distr_va = config.writer_distr_va;
 const produceVersion = config.writer_produceVersion;
 const nmsg_test = config.writer_num_messages;
+const debug = config.writer_debug;
+
+
 const unitIntervalTime = config.unitIntervalTime;
 
 const executor = config.writer_k6_executor;
@@ -40,7 +43,7 @@ const vus= config.writer_k6_vus;
 const iterations = config.writer_k6_iterations;
 const maxDuration = config.writer_k6_maxDuration;
 
-const debug = config.debug;
+//const debug = config.debug.replaceAll("True","true").replaceAll("False","false")
 
 let   batchTimeout=0;
 
@@ -181,14 +184,12 @@ function buildMsg_v1(nmaxmsg){
 
     let nm=j;
     for(j=0;j<nm;j++){
-//         t=timesMsg[j];
-//         d.setSeconds(baseTime.getSeconds()+t);
-//         d=new Date();
+         t=timesMsg[j];
+         d.setSeconds(baseTime.getSeconds()+t);
          msg.push(
           {
             key: schemaRegistry.serialize({
               data: (d.getTime()).toString(), 
-//              data: msg_key_string, // msg key
               schemaType: SCHEMA_TYPE_STRING,
             }),
             value: schemaRegistry.serialize({
@@ -203,12 +204,6 @@ function buildMsg_v1(nmaxmsg){
           },  
          );
          if(j==0){
-//            firstMsgTime.add(d);
-//            firstMsgTime.add(t);  
-//            let t= new Date()-(new Date()).setMilliseconds(0);
-//            let t = new Date()-(new Date()).setHours(0,0,0,0);
-//            log("Time: "+t);
-//            firstMsgTime.add(t); 
             firstMsgTime.add(new Date());  
             log("firstMsg Milliseconds: " + d.getTime());
             log("firstMsg Milliseconds: " + msg[0]['time']);

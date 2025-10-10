@@ -2,7 +2,6 @@ import { check } from "k6";
 // import kafka extension
 import {
   Connection,
-  SCHEMA_TYPE_BYTES,
 } from "k6/x/kafka"; 
 
 

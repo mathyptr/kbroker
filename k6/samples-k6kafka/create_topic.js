@@ -1,10 +1,8 @@
 import { check } from "k6";
 // import kafka extension
 import {
-  Writer,
   Connection,
   SchemaRegistry,
-  SCHEMA_TYPE_STRING,
 } from "k6/x/kafka"
 
 
@@ -28,7 +26,6 @@ const topic = config.topic_string;
 const connection = new Connection({
   address: brokers[connectToBroker_index],
 });
-
 
 
 if (__VU == 0) {
