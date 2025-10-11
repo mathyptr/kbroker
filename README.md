@@ -290,5 +290,15 @@ total-retries | The number of operations retried. | kafka.connect:type=task-erro
 
 
 Custom K6
+| Metric                                  | Type    | Description                                                             |
+| ----------------------------------------| ------- | ----------------------------------------------------------------------- |
+| custom_kafka_writer_first_msg_time      | Counter | First message's Time build by the Producer.                             |
+| custom_kafka_writer_msg_count           | Counter | Total number of messages sent by the Producer.                          |
+| custom_kafka_writer_msg                 | Counter | Total number of times the reader tries to connect.                      |
+| custom_kafka_writer_totalProduceRequest | Counter | Total number of messages sent by the Producer.                          |
+| custom_kafka_reader_first_msg_time      | Counter | First messages' Time read by the Consumer.                              |
+| custom_kafka_reader_msg_count           | Counter | Total number of messages read by the Consumer.                          |
+| custom_kafka_reader_latency             | Counter | Latency.                      |
+
 
 
