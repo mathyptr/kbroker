@@ -167,33 +167,33 @@ services:
         container_name: kafkaSB
         hostname: kafkaSB
         image: kffl/speedbump:latest
-        command: --latency=0ms --sine-amplitude=0ms --sine-period=1m --port=8000 kafka:9092
+        command: --latency=10ms --sine-amplitude=10ms --sine-period=1m --port=8000 kafka:9092
     speedbump2:
         container_name: kafkaSB2
         hostname: kafkaSB2
         image: kffl/speedbump:latest
-        command: --latency=0ms --sine-amplitude=0ms --sine-period=1m --port=8200 kafka2:9092
+        command: --latency=10ms --sine-amplitude=10ms --sine-period=1m --port=8200 kafka2:9092
     speedbump3:
         container_name: kafkaSB3
         hostname: kafkaSB3
         image: kffl/speedbump:latest
-        command: --latency=0ms --sine-amplitude=0ms --sine-period=1m --port=8300 kafka3:9092
+        command: --latency=10ms --sine-amplitude=10ms --sine-period=1m --port=8300 kafka3:9092
 
     speedbumpKafkaCtrl:
         container_name: kafkaControllerSB
         hostname: kafkaControllerSB
         image: kffl/speedbump:latest
-        command: --latency=0ms --sine-amplitude=0ms --sine-period=1m --port=8093 broker:9093
+        command: --latency=10ms --sine-amplitude=10ms --sine-period=1m --port=8093 broker:9093
     speedbumpKafkaCtrl2:
         container_name: kafkaControllerSB2
         hostname: kafkaControllerSB2
         image: kffl/speedbump:latest
-        command: --latency=0ms --sine-amplitude=0ms --sine-period=1m --port=8293 broker2:9093
+        command: --latency=10ms --sine-amplitude=10ms --sine-period=1m --port=8293 broker2:9093
     speedbumpKafkaCtrl3:
         container_name: kafkaControllerSB3
         hostname: kafkaControllerSB3
         image: kffl/speedbump:latest
-        command: --latency=0ms --sine-amplitude=0ms --sine-period=1m --port=8393 broker3:9093
+        command: --latency=10ms --sine-amplitude=10ms --sine-period=1m --port=8393 broker3:9093
 
     jmxtrans:
         container_name: jmxtrans         
