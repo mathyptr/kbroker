@@ -208,6 +208,7 @@ records-lead-min | The min lead of the partition | kafka.consumer:type=consumer-
 
 Kafka Connect
  Metric/Attribute name | Description | Mbean name
+| -------------------------------- | ------- | ----------------------------------------------------------------------- |
 connector-count | The number of connectors run in this worker. | kafka.connect:type=connect-worker-metrics
 connector-startup-attempts-total | The total number of connector startups that this worker has attempted. | kafka.connect:type=connect-worker-metrics
 connector-startup-failure-percentage | The average percentage of this worker's connectors starts that failed. | kafka.connect:type=connect-worker-metrics
