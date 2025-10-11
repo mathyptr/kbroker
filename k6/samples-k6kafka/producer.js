@@ -59,6 +59,7 @@ const writer = new Writer({
   topic: topic,
   batchSize: batchSize,
   batchTimeout: batchTimeout,
+  maxwait: '10s'
 });
 
 
@@ -184,12 +185,12 @@ function buildMsg_v1(nmaxmsg){
 
     let nm=j;
     for(j=0;j<nm;j++){
-         t=timesMsg[j];
-         d.setSeconds(baseTime.getSeconds()+t);
+         let dmsg= new Date();
+         d.setSeconds(baseTime.getSeconds()+timesMsg[j]);
          msg.push(
           {
             key: schemaRegistry.serialize({
-              data: (d.getTime()).toString(), 
+              data: (dmsg.getTime()).toString(), 
               schemaType: SCHEMA_TYPE_STRING,
             }),
             value: schemaRegistry.serialize({
@@ -204,13 +205,12 @@ function buildMsg_v1(nmaxmsg){
           },  
          );
          if(j==0){
-            firstMsgTime.add(new Date());  
-            log("firstMsg Milliseconds: " + d.getTime());
-            log("firstMsg Milliseconds: " + msg[0]['time']);
+            firstMsgTime.add(dmsg);  
+            log("firstMsg Milliseconds   : " + dmsg.getTime());
+            log("firstMsg Milliseconds VA: " + msg[0]['time']);
          }
     }
     d.setSeconds(baseTime.getSeconds()+timesMsg[nm-1]);
-    log("timeToBuildMsg: " + d);
     baseTime=d;
 
     return [msg,t];
@@ -232,10 +232,11 @@ function produceMsg(nmaxmsg){
 
 function writeMsg(msg){
     let nmsgProduct=msg.length;
-    log("Sending messages... " + nmsgProduct + " at "+new Date());
-    writer.produce({ messages: msg });
+    log("--->Sending messages...: " + nmsgProduct + " at "+new Date());
+//    writer.produce({ messages: msg, expectTimeout : true });
+    writer.produce({ messages: msg});
     msgSentMisure.add(nmsgProduct);
-    log("Messages sent: " + nmsgProduct + " at "+new Date());
+    log("--->Messages sent...   : " + nmsgProduct + " at "+new Date());
 };
 
 
@@ -243,9 +244,9 @@ function getSomeSleep(dateSart){
    let elapsed=new Date()-dateSart;
    log("Elapsed Time: " + elapsed + "(ms)");
    if(elapsed<evalPeriod) {
-       log("Sleep for a while "+new Date());
+       log("***Sleep for a while "+new Date());
        sleep((evalPeriod-elapsed)/1000)
-       log("Wake up after sleep "+new Date());
+       log("***Wake up after sleep "+new Date());
    }
 }
 
@@ -254,7 +255,7 @@ export default function () {
   let z = 0;    
   let msgtot = 0;    
   for ( let k=1; k <= numBurstExec ; k++) {
-   log("Burst num: " + k + " start at "+new Date());
+   log("###Burst num: " + k + " start at "+new Date());
 
    let nmsg=getNumMsg();
    let dateSart=new Date();
@@ -262,7 +263,9 @@ export default function () {
    let t=0;
 
    [msg,t]=produceMsg(nmsg);
+   log("***Start sleep for " +t*unitIntervalTime+" to simulate Distr VA: "+new Date());
    sleep(t*unitIntervalTime);
+   log("***End   sleep for " +t*unitIntervalTime+" to simulate Distr VA: "+new Date());
    writeMsg(msg);
    z=z+1;
    msgtot=msgtot+msg.length;
@@ -273,7 +276,7 @@ export default function () {
 
    getSomeSleep(dateSart);
 
-   log("Burst num. " + k + " end at "+new Date());
+   log("###Burst num. " + k + " end at "+new Date());
  }
 }
 

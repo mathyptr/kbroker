@@ -22,7 +22,7 @@ services:
             KAFKA_LISTENERS: PLAINTEXT://broker:9092,CONTROLLER://broker:9093
             KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://broker:9092,CONTROLLER://broker:9093'
             KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-            KAFKA_CONTROLLER_QUORUM_VOTERS: '1@broker:9093,2@broker2:9093,3@broker3:9093'
+            KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafkaControllerSB:8093,2@kafkaControllerSB2:8293,3@kafkaControllerSB3:8393'
             KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
             CLUSTER_ID: 'MY_CLUCSETER_SWAM-QESM_ID'
             KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
@@ -32,12 +32,21 @@ services:
             KAFKA_JMX_PORT: 5555
             KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote.rmi.port=5555 -Dcom.sun.management.jmxremote.port=5555"
         volumes:
-        - type: volume
-          source: broker-data
-          target: /var/lib/kafka/data
-        - type: volume
-          source: broker-secrets
-          target: /etc/kafka/secrets
+            - type: volume
+              source: broker-data
+              target: /var/lib/kafka/data
+            - type: volume
+              source: broker-secrets
+              target: /etc/kafka/secrets
+        depends_on:
+            - influxdb
+            - speedbump
+            - speedbump2
+            - speedbump3
+            - speedbumpKafkaCtrl
+            - speedbumpKafkaCtrl2
+            - speedbumpKafkaCtrl3
+
     kafka2:
         image: apache/kafka:3.9.1
         container_name: broker2
@@ -53,7 +62,7 @@ services:
             KAFKA_LISTENERS: PLAINTEXT://broker2:9092,CONTROLLER://broker2:9093
             KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://broker2:9092,CONTROLLER://broker2:9093'
             KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-            KAFKA_CONTROLLER_QUORUM_VOTERS: '1@broker:9093,2@broker2:9093,3@broker3:9093'
+            KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafkaControllerSB:8093,2@kafkaControllerSB2:8293,3@kafkaControllerSB3:8393'
             KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
             CLUSTER_ID: 'MY_CLUCSETER_SWAM-QESM_ID'
             KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
@@ -62,14 +71,21 @@ services:
             KAFKA_MIN_INSYNC_REPLICAS: 2
             KAFKA_JMX_PORT: 6666
             KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote.rmi.port=6666 -Dcom.sun.management.jmxremote.port=6666"
-
         volumes:
-        - type: volume
-          source: broker-data2
-          target: /var/lib/kafka/data
-        - type: volume
-          source: broker-secrets2
-          target: /etc/kafka/secrets
+             - type: volume
+               source: broker-data2
+               target: /var/lib/kafka/data
+             - type: volume
+               source: broker-secrets2
+               target: /etc/kafka/secrets
+        depends_on:
+            - influxdb
+            - speedbump
+            - speedbump2
+            - speedbump3
+            - speedbumpKafkaCtrl
+            - speedbumpKafkaCtrl2
+            - speedbumpKafkaCtrl3
 
     kafka3:
         image: apache/kafka:3.9.1
@@ -86,7 +102,7 @@ services:
             KAFKA_LISTENERS: PLAINTEXT://broker3:9092,CONTROLLER://broker3:9093
             KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://broker3:9092,CONTROLLER://broker3:9093'
             KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-            KAFKA_CONTROLLER_QUORUM_VOTERS: '1@broker:9093,2@broker2:9093,3@broker3:9093'
+            KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafkaControllerSB:8093,2@kafkaControllerSB2:8293,3@kafkaControllerSB3:8393'
             KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
             CLUSTER_ID: 'MY_CLUCSETER_SWAM-QESM_ID'
             KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
@@ -95,14 +111,21 @@ services:
             KAFKA_MIN_INSYNC_REPLICAS: 2
             KAFKA_JMX_PORT: 7777
             KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost -Dcom.sun.management.jmxremote.rmi.port=7777 -Dcom.sun.management.jmxremote.port=7777"
-
         volumes:
-        - type: volume
-          source: broker-data3
-          target: /var/lib/kafka/data
-        - type: volume
-          source: broker-secrets3
-          target: /etc/kafka/secrets 
+            - type: volume
+              source: broker-data3
+              target: /var/lib/kafka/data
+            - type: volume
+              source: broker-secrets3
+              target: /etc/kafka/secrets 
+        depends_on:
+            - influxdb
+            - speedbump
+            - speedbump2
+            - speedbump3
+            - speedbumpKafkaCtrl
+            - speedbumpKafkaCtrl2
+            - speedbumpKafkaCtrl3
     kafka-ui:
         image: provectuslabs/kafka-ui:latest
         container_name: kafka-ui
@@ -141,14 +164,37 @@ services:
         volumes:
              - ./samples-k6kafka:/scripts
     speedbump:
+        container_name: kafkaSB
+        hostname: kafkaSB
         image: kffl/speedbump:latest
-        command: --latency=1000ms --sine-amplitude=1000ms --sine-period=1m --port=8000 kafka:9092
+        command: --latency=0ms --sine-amplitude=0ms --sine-period=1m --port=8000 kafka:9092
     speedbump2:
+        container_name: kafkaSB2
+        hostname: kafkaSB2
         image: kffl/speedbump:latest
-        command: --latency=1000ms --sine-amplitude=1000ms --sine-period=1m --port=8002 kafka2:9092
+        command: --latency=0ms --sine-amplitude=0ms --sine-period=1m --port=8200 kafka2:9092
     speedbump3:
+        container_name: kafkaSB3
+        hostname: kafkaSB3
         image: kffl/speedbump:latest
-        command: --latency=1000ms --sine-amplitude=1000ms --sine-period=1m --port=8003 kafka3:9092
+        command: --latency=0ms --sine-amplitude=0ms --sine-period=1m --port=8300 kafka3:9092
+
+    speedbumpKafkaCtrl:
+        container_name: kafkaControllerSB
+        hostname: kafkaControllerSB
+        image: kffl/speedbump:latest
+        command: --latency=0ms --sine-amplitude=0ms --sine-period=1m --port=8093 broker:9093
+    speedbumpKafkaCtrl2:
+        container_name: kafkaControllerSB2
+        hostname: kafkaControllerSB2
+        image: kffl/speedbump:latest
+        command: --latency=0ms --sine-amplitude=0ms --sine-period=1m --port=8293 broker2:9093
+    speedbumpKafkaCtrl3:
+        container_name: kafkaControllerSB3
+        hostname: kafkaControllerSB3
+        image: kffl/speedbump:latest
+        command: --latency=0ms --sine-amplitude=0ms --sine-period=1m --port=8393 broker3:9093
+
     jmxtrans:
         container_name: jmxtrans         
         image: jmxtrans/jmxtrans

@@ -42,13 +42,13 @@ if(num_partition>1)
 		brokers: brokers,
 		groupID: groupID,
 		groupTopics: [topic],
-		maxwait: '1s'
+		maxwait: '5s'
 	});
 else
 	reader = new Reader({
 		brokers: brokers,
 		topic: topic,
-		maxwait: '1s'
+		maxwait: '5s'
 	});
 
 
