@@ -139,6 +139,7 @@ K6-KAFKA
 
 KAFKA Producer
  Metric/Attribute name | Description | Mbean name
+| -------------------------------- | ------- | ----------------------------------------------------------------------- |
 batch-size-avg | The average number of bytes sent per partition per-request. | kafka.producer:type=producer-metrics,client-id="{client-id}"
 batch-size-max | The max number of bytes sent per partition per-request. | kafka.producer:type=producer-metrics,client-id="{client-id}"
 batch-split-rate | The average number of batch splits per second | kafka.producer:type=producer-metrics,client-id="{client-id}"
@@ -174,6 +175,7 @@ record-send-total | The total number of records sent for a topic. | kafka.produc
 
 KAFKA Consumer
  Metric/Attribute name | Description | Mbean name
+| -------------------------------- | ------- | ----------------------------------------------------------------------- |
 bytes-consumed-rate | The average number of bytes consumed per second | kafka.consumer:type=consumer-fetch-manager-metrics,client-id="{client-id}"
 bytes-consumed-total | The total number of bytes consumed | kafka.consumer:type=consumer-fetch-manager-metrics,client-id="{client-id}"
 fetch-latency-avg | The average time taken for a fetch request. | kafka.consumer:type=consumer-fetch-manager-metrics,client-id="{client-id}"
