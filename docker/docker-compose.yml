@@ -38,14 +38,6 @@ services:
             - type: volume
               source: broker-secrets
               target: /etc/kafka/secrets
-        depends_on:
-            - influxdb
-            - speedbump
-            - speedbump2
-            - speedbump3
-            - speedbumpKafkaCtrl
-            - speedbumpKafkaCtrl2
-            - speedbumpKafkaCtrl3
 
     kafka2:
         image: apache/kafka:3.9.1
@@ -78,14 +70,6 @@ services:
              - type: volume
                source: broker-secrets2
                target: /etc/kafka/secrets
-        depends_on:
-            - influxdb
-            - speedbump
-            - speedbump2
-            - speedbump3
-            - speedbumpKafkaCtrl
-            - speedbumpKafkaCtrl2
-            - speedbumpKafkaCtrl3
 
     kafka3:
         image: apache/kafka:3.9.1
@@ -118,14 +102,7 @@ services:
             - type: volume
               source: broker-secrets3
               target: /etc/kafka/secrets 
-        depends_on:
-            - influxdb
-            - speedbump
-            - speedbump2
-            - speedbump3
-            - speedbumpKafkaCtrl
-            - speedbumpKafkaCtrl2
-            - speedbumpKafkaCtrl3
+
     kafka-ui:
         image: provectuslabs/kafka-ui:latest
         container_name: kafka-ui
@@ -155,6 +132,9 @@ services:
             - GF_AUTH_BASIC_ENABLED=false
         volumes:
             - ./grafana:/etc/grafana/provisioning/
+        depends_on:
+            - influxdb
+
     k6-kafka:
         image: mostafamoradian/xk6-kafka:latest
         ports:
@@ -168,35 +148,51 @@ services:
         hostname: kafkaSB
         image: kffl/speedbump:latest
         command: --latency=10ms --sine-amplitude=10ms --sine-period=1m --port=8000 kafka:9092
+        depends_on:
+            - kafka
     speedbump2:
         container_name: kafkaSB2
         hostname: kafkaSB2
         image: kffl/speedbump:latest
         command: --latency=10ms --sine-amplitude=10ms --sine-period=1m --port=8200 kafka2:9092
+        depends_on:
+            - kafka2
     speedbump3:
         container_name: kafkaSB3
         hostname: kafkaSB3
         image: kffl/speedbump:latest
         command: --latency=10ms --sine-amplitude=10ms --sine-period=1m --port=8300 kafka3:9092
-
+        depends_on:
+            - kafka3
     speedbumpKafkaCtrl:
         container_name: kafkaControllerSB
         hostname: kafkaControllerSB
         image: kffl/speedbump:latest
         command: --latency=10ms --sine-amplitude=10ms --sine-period=1m --port=8093 broker:9093
+        depends_on:
+            - kafka
     speedbumpKafkaCtrl2:
         container_name: kafkaControllerSB2
         hostname: kafkaControllerSB2
         image: kffl/speedbump:latest
         command: --latency=10ms --sine-amplitude=10ms --sine-period=1m --port=8293 broker2:9093
+        depends_on:
+            - kafka2
     speedbumpKafkaCtrl3:
         container_name: kafkaControllerSB3
         hostname: kafkaControllerSB3
         image: kffl/speedbump:latest
         command: --latency=10ms --sine-amplitude=10ms --sine-period=1m --port=8393 broker3:9093
+        depends_on:
+            - kafka3
 
     jmxtrans:
         container_name: jmxtrans         
         image: jmxtrans/jmxtrans
         volumes: 
             - ./jmxtrans:/var/lib/jmxtrans
+        depends_on:
+            - influxdb
+            - kafka
+            - kafka2
+            - kafka3
