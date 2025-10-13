@@ -88,6 +88,7 @@ function log(str){
 
 function samplePoisson(lambda){
     let l=Math.exp(-lambda);
+    log("+++L= " + l);
     let k=0;
     let p=1;
     do{
@@ -108,11 +109,17 @@ function getNumMsg(){
     if(distr_va==0)
         n= nmsg_test;
     else
-        if (Math.round(Math.random()))
+        n=distrVA(nmsg_test);
+        log("+++numMsg calculated using distr VA on "+ nmsg_test+" : "+n);
+/*        if (Math.round(Math.random())){
             n=batchSize*num_partition;
-        else
+            log("+++numMsg: " + n);
+        }
+        else{
             n=distrVA(nmsg_test);
-    log("numMsg: " + n);
+            log("+++numMsg calculated using distr VA: "+n);
+        }
+*/
     return n;
 };
 
