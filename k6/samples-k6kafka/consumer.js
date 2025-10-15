@@ -12,6 +12,8 @@ import {
 const msgCountMisure = new Counter('custom_kafka_reader_msg_count');
 const firstMsgTime   = new Counter('custom_kafka_reader_first_msg_time');
 const latency   = new Counter('custom_kafka_reader_latency');
+const kafkaLatency   = new Counter('custom_kafka_reader_kafkaLatency');
+const age   = new Counter('custom_kafka_reader_age');
 
 // load test config, used to populate exported options object:
 const config = JSON.parse(open('./config/config.json'));
@@ -34,6 +36,7 @@ const vus= config.reader_k6_vus;
 const iterations = config.reader_k6_iterations;
 const maxDuration = config.reader_k6_maxDuration;
 
+const producerTimeOut= config.writer_batchTimeout;
 
 let reader={};
 
@@ -154,8 +157,15 @@ function readMsg_v1(){
                       schemaType : SCHEMA_TYPE_STRING,
                     })
           let d=new Date();                    
-          latency.add(d.getTime()-producerBuildTime);
+          let l=d.getTime()-producerBuildTime;               
+          latency.add(l);
           firstMsgTime.add(d);
+          age.add(l);
+
+          if(d>=producerTimeOut)
+            kafkaLatency.add(l-producerTimeOut);
+          else
+            kafkaLatency.add(0);
 
           let readnmsg=parseInt(schemaRegistry.deserialize({
                       data: messages[0].value,
@@ -171,6 +181,15 @@ function readMsg_v1(){
           if(readnmsg>1){
              try {
                  let messages = reader.consume({ limit:readnmsg-1 });
+
+                 for(let j=0;j<readnmsg-1;j++){
+                    let producerBuildTime= schemaRegistry.deserialize({
+                         data: messages[j].key,
+                         schemaType : SCHEMA_TYPE_STRING,
+                       })
+                    let d=new Date();                    
+                    age.add(d.getTime()-producerBuildTime);
+                 }
                  nm=nm+messages.length;
                  msgtot=msgtot+nm;
                  msgCountMisure.add(msgtot);
