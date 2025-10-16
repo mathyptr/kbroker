@@ -159,13 +159,12 @@ function readMsg_v1(){
           let d=new Date();                    
           let l=d.getTime()-producerBuildTime;               
           latency.add(l);
-          firstMsgTime.add(d);
-          age.add(l);
+          firstMsgTime.add(d);         
 
-          if(d>=producerTimeOut)
+          if(l>=producerTimeOut)
             kafkaLatency.add(l-producerTimeOut);
           else
-            kafkaLatency.add(0);
+            kafkaLatency.add(l);
 
           let readnmsg=parseInt(schemaRegistry.deserialize({
                       data: messages[0].value,
@@ -177,7 +176,9 @@ function readMsg_v1(){
           log("Consumer Time: "+d);
           log("Max nmsg: " + readnmsg);
 
-          nm=nm+1;
+          nm=nm+1;         
+          d=new Date();
+          age.add(d.getTime()-producerBuildTime);
           if(readnmsg>1){
              try {
                  let messages = reader.consume({ limit:readnmsg-1 });

@@ -15,6 +15,8 @@ const msgCountMisure = new Counter('custom_kafka_writer_msg_count');
 const msgSentMisure = new Counter('custom_kafka_writer_msg');
 const totalProduceRequest = new Counter('custom_kafka_writer_totalProduceRequest');
 const firstMsgTime = new Counter('custom_kafka_writer_first_msg_time');
+const nTimeout = new Counter('custom_kafka_writer_nTimeout');
+const erlang= new Counter('custom_kafka_writer_erlang');
 
 // load test config, used to populate exported options object:
 const config = JSON.parse(open('./config/config.json'));
@@ -45,6 +47,7 @@ const maxDuration = config.writer_k6_maxDuration;
 
 //const debug = config.debug.replaceAll("True","true").replaceAll("False","false")
 
+let nt=0;
 let   batchTimeout=0;
 
 if (produceVersion == 0) {
@@ -124,6 +127,7 @@ function getNumMsg(){
 };
 
 
+
 function buildMsg_v0(nmaxmsg){
     let msg=[];
     let t=0;
@@ -164,7 +168,9 @@ function buildMsg_v1(nmaxmsg){
     let msg=[];
     let timesMsg=[];
     let t=0;
-    let endmsg=false
+    let endmsg=false;
+    let lambda = nmaxmsg;
+
     let j = 0;
     while( j < batchSize*num_partition && endmsg!=true) {
 
@@ -172,16 +178,21 @@ function buildMsg_v1(nmaxmsg){
      if(t>timeOut){
         t=timeOut;
         log("TIMEOUT t: " + t);
+        nt=nt+1;
+        nTimeout.add(nt);
         endmsg=true;
      }
 
      if(j<nmaxmsg){        
          timesMsg[j]=t;
+         erlang.add(t,{ erlang: "erlang Time"});
          j=j+1;
      }
      else{
         t=timeOut;
         log("TIMEOUT t: " + t);
+        nt=nt+1;
+        nTimeout.add(nt);
         endmsg=true;
      }
 
@@ -193,11 +204,11 @@ function buildMsg_v1(nmaxmsg){
     let nm=j;
     for(j=0;j<nm;j++){
          let dmsg= new Date();
-         d.setSeconds(baseTime.getSeconds()+timesMsg[j]);
+         d=new Date(baseTime.getTime()+timesMsg[j]);
          msg.push(
           {
             key: schemaRegistry.serialize({
-              data: (dmsg.getTime()).toString(), 
+              data: (d.getTime()).toString(), 
               schemaType: SCHEMA_TYPE_STRING,
             }),
             value: schemaRegistry.serialize({
@@ -217,8 +228,6 @@ function buildMsg_v1(nmaxmsg){
             log("firstMsg Milliseconds VA: " + msg[0]['time']);
          }
     }
-    d.setSeconds(baseTime.getSeconds()+timesMsg[nm-1]);
-    baseTime=d;
 
     return [msg,t];
 };
@@ -261,6 +270,7 @@ export default function () {
   log("Connect to broker: "+brokers[connectToBroker_index]);  
   let z = 0;    
   let msgtot = 0;    
+  nt=0;
   for ( let k=1; k <= numBurstExec ; k++) {
    log("###Burst num: " + k + " start at "+new Date());
 
