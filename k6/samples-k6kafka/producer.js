@@ -48,7 +48,7 @@ const maxDuration = config.writer_k6_maxDuration;
 //const debug = config.debug.replaceAll("True","true").replaceAll("False","false")
 
 let nt=0;
-let   batchTimeout=0;
+let   batchTimeout=1;
 
 if (produceVersion == 0) {
   batchTimeout=timeOut;
@@ -212,7 +212,7 @@ function buildMsg_v1(nmaxmsg){
               schemaType: SCHEMA_TYPE_STRING,
             }),
             value: schemaRegistry.serialize({
-              data: nm.toString(), // msg value
+              data: (nm-j).toString(), // msg value
               schemaType: SCHEMA_TYPE_STRING,
             }),
             headers: {
