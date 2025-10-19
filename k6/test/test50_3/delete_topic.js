@@ -1,0 +1,28 @@
+import { check } from "k6";
+// import kafka extension
+import {
+  Connection,
+} from "k6/x/kafka"; 
+
+
+// load test config, used to populate exported options object:
+const config = JSON.parse(open('./config/config.json'));
+const brokers = config.brokers;
+const connectToBroker_index = config.connectToBroker_index;
+const topic = config.topic_string;
+
+const connection = new Connection({
+  address: brokers[connectToBroker_index],
+});
+
+export default function () {
+}
+
+export function teardown(data) {
+   if (__VU == 0) {
+    connection.deleteTopic(topic);
+  }
+  else
+    console.log("cannot delete TOPIC: VU!=0 !!!!!!!");
+  connection.close();
+}
