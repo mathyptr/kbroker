@@ -17,7 +17,8 @@ const totalProduceRequest = new Counter('custom_kafka_writer_totalProduceRequest
 const firstMsgTime = new Counter('custom_kafka_writer_first_msg_time');
 const nTimeout = new Counter('custom_kafka_writer_nTimeout');
 const erlang= new Counter('custom_kafka_writer_erlang');
-const tps= new Counter('custom_kafka_writer_tps');
+const tp= new Counter('custom_kafka_writer_tp');
+const timeToBatch= new Counter('custom_kafka_writer_timeToBatch');
 
 // load test config, used to populate exported options object:
 const config = JSON.parse(open('./config/config.json'));
@@ -88,7 +89,7 @@ export const options = {
 
 
 function log(str){
-    if (debug!=0)
+    if (debug)
         console.log(str);
 };
 
@@ -201,6 +202,7 @@ function buildMsg_v1(nmaxmsg){
 
     }
     log("time t: " + t);
+    timeToBatch.add(t);
     let baseTime = new Date();
     let d= new Date();
 
@@ -257,8 +259,11 @@ function writeMsg(msg){
     writer.produce({ messages: msg});
     msgSentMisure.add(nmsgProduct);
     let endsendmsg=new Date();
-    log("--->Messages sent...   : " + nmsgProduct + " at "+endsendmsg);
-    tps.add(1000*nmsgProduct/(endsendmsg-startsendmsg));
+    let delta=endsendmsg.getTime()-startsendmsg.getTime();
+    if(delta==0)
+        delta=0.1;
+    log("--->Messages sent...   : " + nmsgProduct + " at "+endsendmsg +"(delta= "+delta+")");
+    tp.add(1000*nmsgProduct/delta);
 };
 
 

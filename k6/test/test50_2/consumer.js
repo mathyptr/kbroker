@@ -14,7 +14,7 @@ const firstMsgTime   = new Counter('custom_kafka_reader_first_msg_time');
 const latency   = new Counter('custom_kafka_reader_latency');
 const kafkaLatency   = new Counter('custom_kafka_reader_kafkaLatency');
 const age   = new Counter('custom_kafka_reader_age');
-const tps= new Counter('custom_kafka_reader_tps');
+const tps= new Counter('custom_kafka_reader_tp');
 
 // load test config, used to populate exported options object:
 const config = JSON.parse(open('./config/config.json'));
@@ -37,6 +37,7 @@ const vus= config.reader_k6_vus;
 const iterations = config.reader_k6_iterations;
 const startTime=config.reader_k6_startTime;
 const maxDuration = config.reader_k6_maxDuration;
+const maxwait = config.reader_k6_maxwait;
 
 const producerTimeOut= config.writer_batchTimeout;
 
@@ -47,15 +48,14 @@ if(num_partition>1)
 		brokers: brokers,
 		groupID: groupID,
 		groupTopics: [topic],
-		maxwait: '5s'
+		maxwait: maxwait
 	});
 else
 	reader = new Reader({
 		brokers: brokers,
 		topic: topic,
-		maxwait: '5s'
+		maxwait: maxwait
 	});
-
 
 const schemaRegistry = new SchemaRegistry();
 
@@ -76,7 +76,7 @@ export const options = {
 };
 
 function log(str){
-    if (debug!=0)
+    if (debug)
         console.log(str);
 };
 
@@ -148,13 +148,15 @@ function readMsg_v0(){
 function readMsg_v1(){
 
  let msgtot=0;
- for ( let k=1; k <= repetitions ; k++) {
+ for ( let k=1;  ; k++) {
   let nm=0;
   let readnmsg=0;
-  log("---Repeatition num: " + k);
+  log("---Repeatition num: " + k + " start at "+new Date());
   let dateSart=new Date();
   try {
       let messages = reader.consume({ limit: 1 , expectTimeout : true,});
+//      let messages = reader.consume({ limit: 1 });
+      let ds=new Date();   
       if(messages.length!=0){
           let producerBuildTime= schemaRegistry.deserialize({
                       data: messages[0].key,
@@ -185,9 +187,9 @@ function readMsg_v1(){
           age.add(d.getTime()-producerBuildTime);
           if(readnmsg>1){
              try {
-                 let ds=new Date();   
-                 let messages = reader.consume({ limit:readnmsg-1 });
-                 tps.add(1000*messages.length/(new Date()-dateSart));
+                 let messages = reader.consume({ limit:readnmsg-1, expectTimeout : true, });
+                 log("tp: " + (new Date()-d));
+                 tps.add(1000*messages.length/(new Date()-d));
                  for(let j=0;j<readnmsg-1;j++){
                     let producerBuildTime= schemaRegistry.deserialize({
                          data: messages[j].key,
@@ -199,7 +201,7 @@ function readMsg_v1(){
                  nm=nm+messages.length;
                  msgtot=msgtot+nm;
                  msgCountMisure.add(msgtot);
-                 log("Msg read/Total Msg read: "+messages.length+"/" + msgtot);                 
+                 log("Msg read/Total Msg read: "+nm+"/" + msgtot);                 
              }
              catch (error) {
                  log("***this "+ this);

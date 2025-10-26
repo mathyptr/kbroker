@@ -1,108 +1,82 @@
 #!/bin/bash
 export docker_compose_dir="/mnt/944083a7-26f1-424e-b5c7-ab4e081f1f98/swam-qesm/docker/kafka"
-export base_script_dir="/mnt/944083a7-26f1-424e-b5c7-ab4e081f1f98/swam-qesm/docker/kafka/prove"
+export base_script_dir="/mnt/944083a7-26f1-424e-b5c7-ab4e081f1f98/swam-qesm/docker/kafka/prove1"
 
-test="test50_1"
+
+export test="test2_2"
+echo "****TEST 1: "$test
 export script_dir=$base_script_dir/$test
-$script_dir/delcreatetopic.sh
-mate-terminal -e $script_dir/consumer.sh
-mate-terminal -e $script_dir/producer.sh
+./runOneTest.sh
+echo "****TEST 1: Sleep...."
 
 sleep 240
-test="test50_2"
+
+export test="test5_2"
+echo "****TEST 2: "$test
 export script_dir=$base_script_dir/$test
-$script_dir/delcreatetopic.sh
-mate-terminal -e $script_dir/consumer.sh
-mate-terminal -e $script_dir/producer.sh
+./runOneTest.sh
+echo "****TEST 2: Sleep...."
 
 sleep 240
-test="test50_3"
+
+export test="test10_2"
+echo "****TEST 3: "$test
 export script_dir=$base_script_dir/$test
-$script_dir/delcreatetopic.sh
-mate-terminal -e $script_dir/consumer.sh
-mate-terminal -e $script_dir/producer.sh
+./runOneTest.sh
+echo "****TEST 3: Sleep...."
 
 sleep 240
-test="test150_1"
+
+export test="test15_2"
+echo "****TEST 4: "$test
 export script_dir=$base_script_dir/$test
-$script_dir/delcreatetopic.sh
-mate-terminal -e $script_dir/consumer.sh
-mate-terminal -e $script_dir/producer.sh
+./runOneTest.sh
+echo "****TEST 4: Sleep...."
 
 sleep 240
-test="test150_2"
+
+export test="test20_2"
+echo "****TEST 5: "$test
 export script_dir=$base_script_dir/$test
-$script_dir/delcreatetopic.sh
-mate-terminal -e $script_dir/consumer.sh
-mate-terminal -e $script_dir/producer.sh
+./runOneTest.sh
+echo "****TEST 5: Sleep...."
 
 sleep 240
-test="test150_3"
+
+export test="test25_2"
+echo "****TEST 6: "$test
 export script_dir=$base_script_dir/$test
-$script_dir/delcreatetopic.sh
-mate-terminal -e $script_dir/consumer.sh
-mate-terminal -e $script_dir/producer.sh
+./runOneTest.sh
+echo "****TEST 6: Sleep...."
 
 sleep 240
-test="test350_1"
+
+export test="test30_2"
+echo "****TEST 7: "$test
 export script_dir=$base_script_dir/$test
-$script_dir/delcreatetopic.sh
-mate-terminal -e $script_dir/consumer.sh
-mate-terminal -e $script_dir/producer.sh
+./runOneTest.sh
+echo "****TEST 7: Sleep...."
 
 sleep 240
-test="test350_2"
+
+export test="test35_2"
+echo "****TEST 8: "$test
 export script_dir=$base_script_dir/$test
-$script_dir/delcreatetopic.sh
-mate-terminal -e $script_dir/consumer.sh
-mate-terminal -e $script_dir/producer.sh
+./runOneTest.sh
+echo "****TEST 8: Sleep...."
 
 sleep 240
-test="test350_3"
+
+export test="test40_2"
+echo "****TEST 9: "$test
 export script_dir=$base_script_dir/$test
-$script_dir/delcreatetopic.sh
-mate-terminal -e $script_dir/consumer.sh
-mate-terminal -e $script_dir/producer.sh
+./runOneTest.sh
+echo "****TEST 9: Sleep...."
 
 sleep 240
-test="test500_1"
-export script_dir=$base_script_dir/$test
-$script_dir/delcreatetopic.sh
-mate-terminal -e $script_dir/consumer.sh
-mate-terminal -e $script_dir/producer.sh
 
-sleep 240
-test="test500_2"
+export test="test50_2"
+echo "****TEST 10: "$test
 export script_dir=$base_script_dir/$test
-$script_dir/delcreatetopic.sh
-mate-terminal -e $script_dir/consumer.sh
-mate-terminal -e $script_dir/producer.sh
-
-sleep 240
-test="test500_3"
-export script_dir=$base_script_dir/$test
-$script_dir/delcreatetopic.sh
-mate-terminal -e $script_dir/consumer.sh
-mate-terminal -e $script_dir/producer.sh
-
-sleep 240
-test="test700_1"
-export script_dir=$base_script_dir/$test
-$script_dir/delcreatetopic.sh
-mate-terminal -e $script_dir/consumer.sh
-mate-terminal -e $script_dir/producer.sh
-
-sleep 240
-test="test700_2"
-export script_dir=$base_script_dir/$test
-$script_dir/delcreatetopic.sh
-mate-terminal -e $script_dir/consumer.sh
-mate-terminal -e $script_dir/producer.sh
-
-sleep 240
-test="test700_3"
-export script_dir=$base_script_dir/$test
-$script_dir/delcreatetopic.sh
-mate-terminal -e $script_dir/consumer.sh
-mate-terminal -e $script_dir/producer.sh
-
+./runOneTest.sh
+echo "****TEST 10: End"
